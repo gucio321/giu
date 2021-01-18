@@ -37,6 +37,7 @@ type WindowWidget struct {
 	hasFocus      bool
 	bringToFront  bool
 	layout        *Layout
+	pos           imgui.Vec2
 }
 
 func Window(title string) *WindowWidget {
@@ -80,6 +81,7 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 
 	widgets = append(widgets, Custom(func() {
 		w.hasFocus = IsWindowFocused(FocusedFlagsRootAndChildWindows)
+		w.pos = imgui.WindowPos()
 	}))
 
 	if w.bringToFront {
@@ -98,6 +100,10 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 
 func (w *WindowWidget) HasFocus() bool {
 	return w.hasFocus
+}
+
+func (w *WindowWidget) CurrentPosition() (x, y float32) {
+	return w.pos.X, w.pos.Y
 }
 
 func (w *WindowWidget) BringToFront() {
