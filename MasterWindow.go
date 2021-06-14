@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/faiface/mainthread"
+	"github.com/go-gl/glfw/v3.3/glfw"
 
 	"github.com/AllenDang/imgui-go"
 )
@@ -13,15 +14,15 @@ type MasterWindowFlags imgui.GLFWWindowFlags
 
 const (
 	// Specifies the window will be fixed size.
-	MasterWindowFlagsNotResizable MasterWindowFlags = MasterWindowFlags(imgui.GLFWWindowFlagsNotResizable)
+	MasterWindowFlagsNotResizable = MasterWindowFlags(imgui.GLFWWindowFlagsNotResizable)
 	// Specifies whether the window is maximized.
-	MasterWindowFlagsMaximized MasterWindowFlags = MasterWindowFlags(imgui.GLFWWindowFlagsMaximized)
+	MasterWindowFlagsMaximized = MasterWindowFlags(imgui.GLFWWindowFlagsMaximized)
 	// Specifies whether the window will be always-on-top.
-	MasterWindowFlagsFloating MasterWindowFlags = MasterWindowFlags(imgui.GLFWWindowFlagsFloating)
+	MasterWindowFlagsFloating = MasterWindowFlags(imgui.GLFWWindowFlagsFloating)
 	// Specifies whether the window will be frameless.
-	MasterWindowFlagsFrameless MasterWindowFlags = MasterWindowFlags(imgui.GLFWWindowFlagsFrameless)
+	MasterWindowFlagsFrameless = MasterWindowFlags(imgui.GLFWWindowFlagsFrameless)
 	// Specifies whether the window will be transparent.
-	MasterWindowFlagsTransparent MasterWindowFlags = MasterWindowFlags(imgui.GLFWWindowFlagsTransparent)
+	MasterWindowFlagsTransparent = MasterWindowFlags(imgui.GLFWWindowFlagsTransparent)
 )
 
 type MasterWindow struct {
@@ -187,6 +188,10 @@ func (w *MasterWindow) render() {
 	p.PostRender()
 
 	Context.cleanState()
+}
+
+func (w *MasterWindow) SetInputCallback(cb func(key glfw.Key, mods glfw.ModifierKey, action glfw.Action)) {
+	w.platform.SetInputCallback(cb)
 }
 
 // Run the main loop to create new frame, process events and call update ui func.
