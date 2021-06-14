@@ -29,11 +29,12 @@ func SingleWindowWithMenuBar(title string) *WindowWidget {
 }
 
 type WindowWidget struct {
-	title         string
-	open          *bool
-	flags         WindowFlags
-	x, y          float32
-	width, height float32
+	title                   string
+	open                    *bool
+	flags                   WindowFlags
+	x, y                    float32
+	width, height           float32
+	currentPos, currentSize imgui.Vec2
 }
 
 func Window(title string) *WindowWidget {
@@ -67,6 +68,13 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 		return
 	}
 
+	widgets = append(widgets,
+		Custom(func() {
+			w.currentPos = imgui.WindowPos()
+			w.currentSize = imgui.WindowPos()
+		}),
+	)
+
 	if w.flags&imgui.WindowFlagsNoMove != 0 && w.flags&imgui.WindowFlagsNoResize != 0 {
 		imgui.SetNextWindowPos(imgui.Vec2{X: w.x, Y: w.y})
 		imgui.SetNextWindowSize(imgui.Vec2{X: w.width, Y: w.height})
@@ -82,4 +90,12 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 	}
 
 	imgui.End()
+}
+
+func (w *WindowWidget) CurrentPos() (x, y float32) {
+	return w.currentPos.X, w.currentPos.Y
+}
+
+func (w *WindowWidget) CurrentSize() (width, height float32) {
+	return w.currentSize.X, w.currentSize.Y
 }
