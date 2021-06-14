@@ -3,7 +3,7 @@ package main
 import (
 	"image/color"
 
-	g "github.com/AllenDang/giu"
+	g "github.com/gucio321/giu"
 )
 
 func loop() {
