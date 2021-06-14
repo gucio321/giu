@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"time"
 
-	g "github.com/AllenDang/giu"
+	g "github.com/gucio321/giu"
 )
 
 var (

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	g "github.com/AllenDang/giu"
+	g "github.com/gucio321/giu"
 )
 
 func loop() {
