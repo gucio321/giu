@@ -92,7 +92,7 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 	imgui.End()
 }
 
-func (w *WindowWidget) CurrentPos() (x, y float32) {
+func (w *WindowWidget) CurrentPosition() (x, y float32) {
 	return w.currentPos.X, w.currentPos.Y
 }
 
