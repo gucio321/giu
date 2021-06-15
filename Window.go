@@ -1,6 +1,8 @@
 package giu
 
 import (
+	"fmt"
+
 	"github.com/AllenDang/imgui-go"
 )
 
@@ -37,6 +39,7 @@ type WindowWidget struct {
 	currentPos, currentSize imgui.Vec2
 	hasFocus                bool
 	bringToFront            bool
+	registeredShortcuts     bool
 }
 
 func Window(title string) *WindowWidget {
@@ -70,11 +73,14 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 		return
 	}
 
+	w.currentPos = imgui.WindowPos()
+	w.currentSize = imgui.WindowPos()
+	w.hasFocus = IsWindowFocused(FocusedFlagsAnyWindow)
 	widgets = append(widgets,
 		Custom(func() {
 			w.currentPos = imgui.WindowPos()
 			w.currentSize = imgui.WindowPos()
-			w.hasFocus = IsWindowFocused(FocusedFlagsChildWindows)
+			w.hasFocus = IsWindowFocused(FocusedFlagsAnyWindow)
 		}),
 	)
 
@@ -98,6 +104,11 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 	}
 
 	imgui.End()
+
+	if !w.HasFocus() {
+		UnregisterWindowShortcuts()
+		w.registeredShortcuts = false
+	}
 }
 
 func (w *WindowWidget) CurrentPosition() (x, y float32) {
@@ -114,4 +125,18 @@ func (w *WindowWidget) HasFocus() bool {
 
 func (w *WindowWidget) BringToFront() {
 	w.bringToFront = true
+}
+
+func (w *WindowWidget) Shortcuts(shortcuts ...Shortcut) *WindowWidget {
+	// fmt.Println(w.HasFocus(), !w.registeredShortcuts)
+	if w.HasFocus() && !w.registeredShortcuts {
+		fmt.Println("adding shortcuts")
+		for _, s := range shortcuts {
+			RegisterShortcut(s.Callback, s.Key, s.Modifier, false)
+		}
+
+		w.registeredShortcuts = true
+	}
+
+	return w
 }
