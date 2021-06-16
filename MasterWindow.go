@@ -193,12 +193,14 @@ func (w *MasterWindow) render() {
 }
 
 func (w *MasterWindow) SetInputCallback(cb func(key glfw.Key, mods glfw.ModifierKey, action glfw.Action)) {
-	w.platform.SetInputCallback(func(key glfw.Key, mod glfw.ModifierKey, action glfw.Action) {
-		InputHandler(key, mod, action)
-		if cb != nil {
-			cb(key, mod, action)
-		}
-	})
+	/*
+		w.platform.SetInputCallback(func(key glfw.Key, mod glfw.ModifierKey, action glfw.Action) {
+			InputHandler(key, mod, action)
+			if cb != nil {
+				cb(key, mod, action)
+			}
+		})
+	*/
 }
 
 // Run the main loop to create new frame, process events and call update ui func.
