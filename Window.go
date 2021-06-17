@@ -44,6 +44,7 @@ type WindowWidget struct {
 	flags         WindowFlags
 	x, y          float32
 	width, height float32
+	bringToFront  bool
 }
 
 func Window(title string) *WindowWidget {
@@ -98,6 +99,11 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 		}),
 	)
 
+	if w.bringToFront {
+		imgui.SetNextWindowFocus()
+		w.bringToFront = false
+	}
+
 	showed := imgui.BeginV(tStr(w.title), w.open, int(w.flags))
 
 	if showed {
@@ -124,6 +130,10 @@ func (w *WindowWidget) RegisterKeyboardShortcuts(s ...WindowShortcut) *WindowWid
 	}
 
 	return w
+}
+
+func (w *WindowWidget) BringToFront() {
+	w.bringToFront = true
 }
 
 func (w *WindowWidget) getStateID() string {
