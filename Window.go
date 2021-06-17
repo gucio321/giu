@@ -83,3 +83,10 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 
 	imgui.End()
 }
+
+func (w *WindowWidget) RegisterKeyboardShortcuts(s ...Shortcut) {
+	for _, shortcut := range s {
+		shortcut.IsGlobal = false
+		RegisterKeyboardShortcut(shortcut)
+	}
+}
