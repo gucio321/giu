@@ -1,6 +1,8 @@
 package giu
 
 import (
+	"fmt"
+
 	"github.com/AllenDang/imgui-go"
 )
 
@@ -26,6 +28,14 @@ func SingleWindowWithMenuBar(title string) *WindowWidget {
 				imgui.WindowFlagsNoMove|
 				imgui.WindowFlagsMenuBar|
 				imgui.WindowFlagsNoResize).Size(size[0], size[1])
+}
+
+type windowState struct {
+	hasFocus bool
+}
+
+func (s *windowState) Dispose() {
+	// noop
 }
 
 type WindowWidget struct {
@@ -67,6 +77,8 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 		return
 	}
 
+	ws := w.getState()
+
 	if w.flags&imgui.WindowFlagsNoMove != 0 && w.flags&imgui.WindowFlagsNoResize != 0 {
 		imgui.SetNextWindowPos(imgui.Vec2{X: w.x, Y: w.y})
 		imgui.SetNextWindowSize(imgui.Vec2{X: w.width, Y: w.height})
@@ -74,6 +86,17 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 		imgui.SetNextWindowPosV(imgui.Vec2{X: w.x, Y: w.y}, imgui.ConditionFirstUseEver, imgui.Vec2{X: 0, Y: 0})
 		imgui.SetNextWindowSizeV(imgui.Vec2{X: w.width, Y: w.height}, imgui.ConditionFirstUseEver)
 	}
+
+	widgets = append(widgets,
+		Custom(func() {
+			hasFocus := IsWindowFocused(0)
+			if !hasFocus && ws.hasFocus {
+				unregisterWindowShortcuts()
+			}
+
+			ws.hasFocus = hasFocus
+		}),
+	)
 
 	showed := imgui.BeginV(tStr(w.title), w.open, int(w.flags))
 
@@ -84,9 +107,36 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 	imgui.End()
 }
 
-func (w *WindowWidget) RegisterKeyboardShortcuts(s ...Shortcut) {
-	for _, shortcut := range s {
-		shortcut.IsGlobal = false
-		RegisterKeyboardShortcut(shortcut)
+func (w *WindowWidget) HasFocus() bool {
+	return w.getState().hasFocus
+}
+
+func (w *WindowWidget) RegisterKeyboardShortcuts(s ...Shortcut) *WindowWidget {
+	if w.HasFocus() {
+		for _, shortcut := range s {
+			shortcut.IsGlobal = false
+			RegisterKeyboardShortcut(shortcut)
+		}
 	}
+
+	return w
+}
+
+func (w *WindowWidget) getStateID() string {
+	return fmt.Sprintf("%s_windowState", w.title)
+}
+
+// returns window state
+func (w *WindowWidget) getState() (state *windowState) {
+	s := Context.GetState(w.getStateID())
+
+	if s != nil {
+		state = s.(*windowState)
+	} else {
+		state = &windowState{}
+
+		Context.SetState(w.getStateID(), state)
+	}
+
+	return state
 }
