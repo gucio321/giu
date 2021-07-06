@@ -987,7 +987,6 @@ func (s *inputTextState) Dispose() {
 func InputText(value *string) *InputTextWidget {
 	return &InputTextWidget{
 		hint:     "",
-		label:    GenAutoID(""),
 		value:    value,
 		width:    0,
 		flags:    0,
@@ -997,7 +996,7 @@ func InputText(value *string) *InputTextWidget {
 }
 
 func (i *InputTextWidget) Label(label string) *InputTextWidget {
-	i.label = tStr(label) + i.label
+	i.label = tStr(label)
 	return i
 }
 
@@ -1034,11 +1033,12 @@ func (i *InputTextWidget) OnChange(onChange func()) *InputTextWidget {
 }
 
 func (i *InputTextWidget) Build() {
+	id := GenAutoID(i.label)
 	// Get state
 	var state *inputTextState
-	if s := Context.GetState(i.label); s == nil {
+	if s := Context.GetState(id); s == nil {
 		state = &inputTextState{}
-		Context.SetState(i.label, state)
+		Context.SetState(id, state)
 	} else {
 		state = s.(*inputTextState)
 	}
@@ -1047,7 +1047,7 @@ func (i *InputTextWidget) Build() {
 		PushItemWidth(i.width)
 	}
 
-	isChanged := imgui.InputTextWithHint(i.label, i.hint, tStrPtr(i.value), int(i.flags), i.cb)
+	isChanged := imgui.InputTextWithHint(id, i.hint, tStrPtr(i.value), int(i.flags), i.cb)
 
 	if i.width != 0 {
 		PopItemWidth()
@@ -1128,15 +1128,11 @@ func (i *InputIntWidget) OnChange(onChange func()) *InputIntWidget {
 }
 
 func (i *InputIntWidget) Build() {
-	if len(i.label) == 0 {
-		i.label = GenAutoID(i.label)
-	}
-
 	if i.width != 0 {
 		PushItemWidth(i.width)
 	}
 
-	if imgui.InputIntV(i.label, i.value, 0, 100, int(i.flags)) && i.onChange != nil {
+	if imgui.InputIntV(GenAutoID(i.label), i.value, 0, 100, int(i.flags)) && i.onChange != nil {
 		i.onChange()
 	}
 
@@ -1185,15 +1181,11 @@ func (i *InputFloatWidget) Format(format string) *InputFloatWidget {
 }
 
 func (i *InputFloatWidget) Build() {
-	if len(i.label) == 0 {
-		i.label = GenAutoID(i.label)
-	}
-
 	if i.width != 0 {
 		PushItemWidth(i.width)
 	}
 
-	if imgui.InputFloatV(i.label, i.value, 0, 0, i.format, int(i.flags)) && i.onChange != nil {
+	if imgui.InputFloatV(GenAutoID(i.label), i.value, 0, 0, i.format, int(i.flags)) && i.onChange != nil {
 		i.onChange()
 	}
 
