@@ -696,6 +696,11 @@ func ImageWithRgba(rgba *image.RGBA) *ImageWithRgbaWidget {
 	}
 }
 
+func (i *ImageWithRgbaWidget) Size(width, height float32) *ImageWithRgbaWidget {
+	i.width, i.height = width, height
+	return i
+}
+
 func (i *ImageWithRgbaWidget) Build() {
 	state := Context.GetState(i.id)
 
