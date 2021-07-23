@@ -701,6 +701,11 @@ func (i *ImageWithRgbaWidget) Size(width, height float32) *ImageWithRgbaWidget {
 	return i
 }
 
+func (i *ImageWithRgbaWidget) ID(id string) *ImageWithRgbaWidget {
+	i.id = id
+	return i
+}
+
 func (i *ImageWithRgbaWidget) Build() {
 	state := Context.GetState(i.id)
 
