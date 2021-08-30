@@ -40,8 +40,8 @@ func (t *TextureLoader) Tex(tex *Texture) *TextureLoader {
 }
 
 // Forever if set, the texture will not be lost.
-func (t *TextureLoader) Forever() *TextureLoader {
-	t.forever = true
+func (t *TextureLoader) Forever(f bool) *TextureLoader {
+	t.forever = f
 	return t
 }
 

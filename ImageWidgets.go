@@ -62,7 +62,7 @@ type ImageWithTextureWidget struct {
 }
 
 func ImageWithTexture(texture *Texture) *ImageWithTextureWidget {
-	return &ImageWithTextureWidget{
+	result := &ImageWithTextureWidget{
 		texture:     texture,
 		width:       100 * Context.platform.GetContentScale(),
 		height:      100 * Context.platform.GetContentScale(),
@@ -71,6 +71,10 @@ func ImageWithTexture(texture *Texture) *ImageWithTextureWidget {
 		tintColor:   color.RGBA{255, 255, 255, 255},
 		borderColor: color.RGBA{0, 0, 0, 0},
 	}
+	if result.texture == nil {
+		result.texture = &Texture{}
+	}
+	return result
 }
 
 func (i *ImageWithTextureWidget) Uv(uv0, uv1 image.Point) ImageWidget {
@@ -180,21 +184,7 @@ func (i *ImageWithRgbaWidget) Forever(forever bool) ImageWidget {
 
 func (i *ImageWithRgbaWidget) Build() {
 	if i.rgba != nil {
-		state := Context.GetState(i.id)
-
-		if state == nil {
-			Context.SetState(i.id, &ImageState{})
-
-			go func() {
-				texture, err := NewTextureFromRgba(i.rgba)
-				if err == nil {
-					Context.SetState(i.id, &ImageState{texture: texture})
-				}
-			}()
-		} else {
-			imgState := state.(*ImageState)
-			i.img.texture = imgState.texture
-		}
+		AddTexture(i.rgba).Tex(i.img.texture).Forever(i.forever).Build()
 	}
 
 	i.img.Build()
