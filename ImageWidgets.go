@@ -9,9 +9,28 @@ import (
 	"image/draw"
 	"time"
 
+	"github.com/AllenDang/imgui-go"
 	"github.com/go-resty/resty/v2"
-	"github.com/ianling/imgui-go"
 )
+
+type ImageWidget interface {
+	Widget
+
+	Uv(uv0, uv1 image.Point) ImageWidget
+	TintColor(tintColor color.RGBA) ImageWidget
+	BorderCol(borderColor color.RGBA) ImageWidget
+	OnClick(cb func()) ImageWidget
+	Size(width, height float32) ImageWidget
+}
+
+func Image(data interface{}) ImageWidget {
+	switch imageData := data.(type) {
+	case *Texture:
+		return ImageWithTexture(imageData)
+	default:
+		return ImageWithTexture(nil)
+	}
+}
 
 type ImageState struct {
 	loading bool
@@ -28,7 +47,9 @@ func (is *ImageState) Dispose() {
 	}
 }
 
-type ImageWidget struct {
+var _ ImageWidget = &ImageWithTextureWidget{}
+
+type ImageWithTextureWidget struct {
 	texture                *Texture
 	width                  float32
 	height                 float32
@@ -37,8 +58,8 @@ type ImageWidget struct {
 	onClick                func()
 }
 
-func Image(texture *Texture) *ImageWidget {
-	return &ImageWidget{
+func ImageWithTexture(texture *Texture) ImageWidget {
+	return &ImageWithTextureWidget{
 		texture:     texture,
 		width:       100 * Context.platform.GetContentScale(),
 		height:      100 * Context.platform.GetContentScale(),
@@ -49,33 +70,33 @@ func Image(texture *Texture) *ImageWidget {
 	}
 }
 
-func (i *ImageWidget) Uv(uv0, uv1 image.Point) *ImageWidget {
+func (i *ImageWithTextureWidget) Uv(uv0, uv1 image.Point) ImageWidget {
 	i.uv0, i.uv1 = uv0, uv1
 	return i
 }
 
-func (i *ImageWidget) TintColor(tintColor color.RGBA) *ImageWidget {
+func (i *ImageWithTextureWidget) TintColor(tintColor color.RGBA) ImageWidget {
 	i.tintColor = tintColor
 	return i
 }
 
-func (i *ImageWidget) BorderCol(borderColor color.RGBA) *ImageWidget {
+func (i *ImageWithTextureWidget) BorderCol(borderColor color.RGBA) ImageWidget {
 	i.borderColor = borderColor
 	return i
 }
 
-func (i *ImageWidget) OnClick(cb func()) *ImageWidget {
+func (i *ImageWithTextureWidget) OnClick(cb func()) ImageWidget {
 	i.onClick = cb
 	return i
 }
 
-func (i *ImageWidget) Size(width, height float32) *ImageWidget {
+func (i *ImageWithTextureWidget) Size(width, height float32) ImageWidget {
 	scale := Context.platform.GetContentScale()
 	i.width, i.height = width*scale, height*scale
 	return i
 }
 
-func (i *ImageWidget) Build() {
+func (i *ImageWithTextureWidget) Build() {
 	size := imgui.Vec2{X: i.width, Y: i.height}
 	rect := imgui.ContentRegionAvail()
 	if size.X == (-1 * Context.GetPlatform().GetContentScale()) {
@@ -130,7 +151,7 @@ func (i *ImageWithRgbaWidget) OnClick(cb func()) *ImageWithRgbaWidget {
 }
 
 func (i *ImageWithRgbaWidget) Build() {
-	widget := Image(nil).Size(i.width, i.height).OnClick(i.onClick)
+	widget := ImageWithTexture(nil).Size(i.width, i.height).OnClick(i.onClick)
 
 	if i.rgba != nil {
 		state := Context.GetState(i.id)
@@ -146,7 +167,7 @@ func (i *ImageWithRgbaWidget) Build() {
 			}()
 		} else {
 			imgState := state.(*ImageState)
-			widget.texture = imgState.texture
+			widget = ImageWithTexture(imgState.texture).Size(i.width, i.height).OnClick(i.onClick)
 		}
 	}
 
@@ -200,7 +221,7 @@ func (i *ImageWithFileWidget) Build() {
 		}
 	} else {
 		imgState := state.(*ImageState)
-		widget.texture = imgState.texture
+		widget = Image(imgState.texture).OnClick(i.onClick).Size(i.width, i.height)
 	}
 
 	widget.Build()
@@ -335,7 +356,7 @@ func (i *ImageWithUrlWidget) Build() {
 			return
 		}
 
-		widget.texture = imgState.texture
+		widget = Image(imgState.texture).OnClick(i.onClick).Size(i.width, i.height)
 	}
 
 	widget.Build()
