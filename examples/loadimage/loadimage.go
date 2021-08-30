@@ -19,7 +19,7 @@ var (
 func loop() {
 	g.SingleWindow().Layout(
 		g.Label("Display image from rgba"),
-		g.ImageWithRgba(rgba).OnClick(func() {
+		g.Image(rgba).OnClick(func() {
 			fmt.Println("rgba image was clicked")
 		}).Size(200, 100),
 

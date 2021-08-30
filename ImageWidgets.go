@@ -21,12 +21,15 @@ type ImageWidget interface {
 	BorderCol(borderColor color.RGBA) ImageWidget
 	OnClick(cb func()) ImageWidget
 	Size(width, height float32) ImageWidget
+	Forever(forever bool) ImageWidget
 }
 
 func Image(data interface{}) ImageWidget {
 	switch imageData := data.(type) {
 	case *Texture:
 		return ImageWithTexture(imageData)
+	case *image.RGBA:
+		return ImageWithRgba(imageData)
 	default:
 		return ImageWithTexture(nil)
 	}
@@ -58,7 +61,7 @@ type ImageWithTextureWidget struct {
 	onClick                func()
 }
 
-func ImageWithTexture(texture *Texture) ImageWidget {
+func ImageWithTexture(texture *Texture) *ImageWithTextureWidget {
 	return &ImageWithTextureWidget{
 		texture:     texture,
 		width:       100 * Context.platform.GetContentScale(),
@@ -96,6 +99,11 @@ func (i *ImageWithTextureWidget) Size(width, height float32) ImageWidget {
 	return i
 }
 
+func (i *ImageWithTextureWidget) Forever(_ bool) ImageWidget {
+	// noop
+	return i
+}
+
 func (i *ImageWithTextureWidget) Build() {
 	size := imgui.Vec2{X: i.width, Y: i.height}
 	rect := imgui.ContentRegionAvail()
@@ -123,36 +131,54 @@ func (i *ImageWithTextureWidget) Build() {
 	}
 }
 
+var _ ImageWidget = &ImageWithRgbaWidget{}
+
 type ImageWithRgbaWidget struct {
 	id      string
-	width   float32
-	height  float32
 	rgba    *image.RGBA
-	onClick func()
+	forever bool
+	img     *ImageWithTextureWidget
 }
 
 func ImageWithRgba(rgba *image.RGBA) *ImageWithRgbaWidget {
 	return &ImageWithRgbaWidget{
-		id:     GenAutoID("ImageWithRgba_%v"),
-		width:  100,
-		height: 100,
-		rgba:   rgba,
+		id:   GenAutoID("ImageWithRgba_%v"),
+		img:  ImageWithTexture(nil),
+		rgba: rgba,
 	}
 }
 
-func (i *ImageWithRgbaWidget) Size(width, height float32) *ImageWithRgbaWidget {
-	i.width, i.height = width, height
+func (i *ImageWithRgbaWidget) Uv(uv0, uv1 image.Point) ImageWidget {
+	i.img.Uv(uv0, uv1)
 	return i
 }
 
-func (i *ImageWithRgbaWidget) OnClick(cb func()) *ImageWithRgbaWidget {
-	i.onClick = cb
+func (i *ImageWithRgbaWidget) TintColor(col color.RGBA) ImageWidget {
+	i.img.TintColor(col)
+	return i
+}
+
+func (i *ImageWithRgbaWidget) Size(width, height float32) ImageWidget {
+	i.img.Size(width, height)
+	return i
+}
+
+func (i *ImageWithRgbaWidget) OnClick(cb func()) ImageWidget {
+	i.img.OnClick(cb)
+	return i
+}
+
+func (i *ImageWithRgbaWidget) BorderCol(col color.RGBA) ImageWidget {
+	i.img.BorderCol(col)
+	return i
+}
+
+func (i *ImageWithRgbaWidget) Forever(forever bool) ImageWidget {
+	i.forever = forever
 	return i
 }
 
 func (i *ImageWithRgbaWidget) Build() {
-	widget := ImageWithTexture(nil).Size(i.width, i.height).OnClick(i.onClick)
-
 	if i.rgba != nil {
 		state := Context.GetState(i.id)
 
@@ -167,11 +193,11 @@ func (i *ImageWithRgbaWidget) Build() {
 			}()
 		} else {
 			imgState := state.(*ImageState)
-			widget = ImageWithTexture(imgState.texture).Size(i.width, i.height).OnClick(i.onClick)
+			i.img.texture = imgState.texture
 		}
 	}
 
-	widget.Build()
+	i.img.Build()
 }
 
 type ImageWithFileWidget struct {
