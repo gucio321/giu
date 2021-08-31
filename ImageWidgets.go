@@ -30,6 +30,8 @@ func Image(data interface{}) ImageWidget {
 		return ImageWithTexture(imageData)
 	case *image.RGBA:
 		return ImageWithRgba(imageData)
+	case string:
+		return ImageWithFile(imageData)
 	default:
 		return ImageWithTexture(nil)
 	}
@@ -190,57 +192,80 @@ func (i *ImageWithRgbaWidget) Build() {
 	i.img.Build()
 }
 
+type ImageWithFileState struct {
+	rgba *image.RGBA
+}
+
+func (s *ImageWithFileState) Dispose() {
+	// noop
+}
+
+var _ ImageWidget = &ImageWithFileWidget{}
+
 type ImageWithFileWidget struct {
 	id      string
-	width   float32
-	height  float32
 	imgPath string
-	onClick func()
+	img     *ImageWithRgbaWidget
 }
 
 func ImageWithFile(imgPath string) *ImageWithFileWidget {
 	return &ImageWithFileWidget{
 		id:      fmt.Sprintf("ImageWithFile_%s", imgPath),
-		width:   100,
-		height:  100,
 		imgPath: imgPath,
+		img:     ImageWithRgba(nil),
 	}
 }
 
-func (i *ImageWithFileWidget) Size(width, height float32) *ImageWithFileWidget {
-	i.width, i.height = width, height
+func (i *ImageWithFileWidget) Uv(uv0, uv1 image.Point) ImageWidget {
+	i.img.Uv(uv0, uv1)
 	return i
 }
 
-func (i *ImageWithFileWidget) OnClick(cb func()) *ImageWithFileWidget {
-	i.onClick = cb
+func (i *ImageWithFileWidget) TintColor(col color.RGBA) ImageWidget {
+	i.img.TintColor(col)
+	return i
+}
+
+func (i *ImageWithFileWidget) BorderCol(col color.RGBA) ImageWidget {
+	i.img.BorderCol(col)
+	return i
+}
+
+func (i *ImageWithFileWidget) Size(width, height float32) ImageWidget {
+	i.img.Size(width, height)
+	return i
+}
+
+func (i *ImageWithFileWidget) OnClick(cb func()) ImageWidget {
+	i.img.OnClick(cb)
+	return i
+}
+
+func (i *ImageWithFileWidget) Forever(forever bool) ImageWidget {
+	i.Forever(forever)
 	return i
 }
 
 func (i *ImageWithFileWidget) Build() {
-	state := Context.GetState(i.id)
-
-	widget := Image(nil).OnClick(i.onClick).Size(i.width, i.height)
-
-	if state == nil {
-		// Prevent multiple invocation to LoadImage.
-		Context.SetState(i.id, &ImageState{})
-
-		img, err := LoadImage(i.imgPath)
-		if err == nil {
-			go func() {
-				texture, err := NewTextureFromRgba(img)
-				if err == nil {
-					Context.SetState(i.id, &ImageState{texture: texture})
-				}
-			}()
+	stateID := fmt.Sprintf("%s_state", i.id)
+	s := Context.GetState(stateID)
+	var state *ImageWithFileState
+	if s == nil {
+		var err error
+		newState := &ImageWithFileState{}
+		newState.rgba, err = LoadImage(i.imgPath)
+		if err != nil {
+			return
 		}
+		Context.SetState(stateID, newState)
+		state = newState
 	} else {
-		imgState := state.(*ImageState)
-		widget = Image(imgState.texture).OnClick(i.onClick).Size(i.width, i.height)
+		state = s.(*ImageWithFileState)
 	}
 
-	widget.Build()
+	i.img.rgba = state.rgba
+
+	i.img.Build()
 }
 
 type ImageWithUrlWidget struct {

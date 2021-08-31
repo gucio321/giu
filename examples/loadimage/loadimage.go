@@ -27,7 +27,7 @@ func loop() {
 		g.Image(texture),
 
 		g.Label("Display image from file"),
-		g.ImageWithFile("gopher.png").OnClick(func() {
+		g.Image("gopher.png").OnClick(func() {
 			fmt.Println("image from file was clicked")
 		}).Size(300, 200),
 
@@ -47,7 +47,7 @@ func loop() {
 				}),
 			).
 			LayoutForFailure(
-				g.ImageWithFile("./fallback.png").Size(300, 200),
+				g.Image("./fallback.png").Size(300, 200),
 			).
 			OnReady(func() {
 				fmt.Println("Image is downloaded.")
