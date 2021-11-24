@@ -598,16 +598,19 @@ func TabBar() *TabBarWidget {
 	}
 }
 
+// Flags sets tab bar flags
 func (t *TabBarWidget) Flags(flags TabBarFlags) *TabBarWidget {
 	t.flags = flags
 	return t
 }
 
+// ID allows to manually set tab bar id (shouldn't be used)
 func (t *TabBarWidget) ID(id string) *TabBarWidget {
 	t.id = id
 	return t
 }
 
+// TabItems sets list of tab items in tab bar
 func (t *TabBarWidget) TabItems(items ...*TabItemWidget) *TabBarWidget {
 	t.tabItems = items
 	return t
@@ -625,9 +628,31 @@ func (t *TabBarWidget) Build() {
 
 var _ Widget = &TooltipWidget{}
 
+// TooltipWidget is a popping up last item's tooltip.
 type TooltipWidget struct {
 	tip    string
 	layout Layout
+}
+
+// Tooltip constructs tooltip widget
+// it takes tooltip text as an argument, however it is also possible
+// to set a group of widget in a tooltip using Layout method.
+func Tooltip(tip string) *TooltipWidget {
+	return &TooltipWidget{
+		tip:    tStr(tip),
+		layout: nil,
+	}
+}
+
+// Tooltipf sets formatted tooltip text
+func Tooltipf(format string, args ...interface{}) *TooltipWidget {
+	return Tooltip(fmt.Sprintf(format, args...))
+}
+
+// Layout allows to set a group of widget inside of tooltip
+func (t *TooltipWidget) Layout(widgets ...Widget) *TooltipWidget {
+	t.layout = Layout(widgets)
+	return t
 }
 
 // Build implements Widget interface.
@@ -643,37 +668,24 @@ func (t *TooltipWidget) Build() {
 	}
 }
 
-func Tooltip(tip string) *TooltipWidget {
-	return &TooltipWidget{
-		tip:    tStr(tip),
-		layout: nil,
-	}
-}
-
-func Tooltipf(format string, args ...interface{}) *TooltipWidget {
-	return Tooltip(fmt.Sprintf(format, args...))
-}
-
-func (t *TooltipWidget) Layout(widgets ...Widget) *TooltipWidget {
-	t.layout = Layout(widgets)
-	return t
-}
-
 var _ Widget = &SpacingWidget{}
 
 type SpacingWidget struct{}
+
+// Spacing creates new SpacingWidget
+func Spacing() *SpacingWidget {
+	return &SpacingWidget{}
+}
 
 // Build implements Widget interface.
 func (s *SpacingWidget) Build() {
 	imgui.Spacing()
 }
 
-func Spacing() *SpacingWidget {
-	return &SpacingWidget{}
-}
-
 var _ Widget = &ColorEditWidget{}
 
+// ColorEditWidget is a built-in imgui color editor implementation.
+// there is an input text field with color number value and a small priveiw next to it.
 type ColorEditWidget struct {
 	label    string
 	color    *color.RGBA
@@ -682,6 +694,7 @@ type ColorEditWidget struct {
 	onChange func()
 }
 
+// ColorEdit creates new color edit widget
 func ColorEdit(label string, c *color.RGBA) *ColorEditWidget {
 	return &ColorEditWidget{
 		label: GenAutoID(label),
@@ -690,16 +703,19 @@ func ColorEdit(label string, c *color.RGBA) *ColorEditWidget {
 	}
 }
 
+// OnChange sets change callback
 func (ce *ColorEditWidget) OnChange(cb func()) *ColorEditWidget {
 	ce.onChange = cb
 	return ce
 }
 
+// Flags allows to set color edit flags
 func (ce *ColorEditWidget) Flags(f ColorEditFlags) *ColorEditWidget {
 	ce.flags = f
 	return ce
 }
 
+// Size sets widget's size
 func (ce *ColorEditWidget) Size(width float32) *ColorEditWidget {
 	ce.width = width
 	return ce
@@ -707,6 +723,7 @@ func (ce *ColorEditWidget) Size(width float32) *ColorEditWidget {
 
 // Build implements Widget interface.
 func (ce *ColorEditWidget) Build() {
+	// translate golang color to imgui-native [4]float32
 	c := ToVec4Color(*ce.color)
 	col := [4]float32{
 		c.X,
@@ -717,6 +734,7 @@ func (ce *ColorEditWidget) Build() {
 
 	if ce.width > 0 {
 		imgui.PushItemWidth(ce.width)
+		defer imgui.PopItemWidth()
 	}
 
 	if imgui.ColorEdit4V(
@@ -724,18 +742,16 @@ func (ce *ColorEditWidget) Build() {
 		&col,
 		int(ce.flags),
 	) {
+		// update golang color value
 		*ce.color = Vec4ToRGBA(imgui.Vec4{
 			X: col[0],
 			Y: col[1],
 			Z: col[2],
 			W: col[3],
 		})
+
 		if ce.onChange != nil {
 			ce.onChange()
 		}
-	}
-
-	if ce.width > 0 {
-		imgui.PopItemWidth()
 	}
 }
