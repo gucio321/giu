@@ -230,12 +230,15 @@ func (c *ComboWidget) OnChange(onChange func()) *ComboWidget {
 
 var _ Widget = &ContextMenuWidget{}
 
+// ContextMenuWidget is a popping up window that appears
+// when one of mouse button was clicked.
 type ContextMenuWidget struct {
 	id          string
 	mouseButton MouseButton
 	layout      Layout
 }
 
+// ContextMenu creates a new context menu widget
 func ContextMenu() *ContextMenuWidget {
 	return &ContextMenuWidget{
 		mouseButton: MouseButtonRight,
@@ -244,16 +247,19 @@ func ContextMenu() *ContextMenuWidget {
 	}
 }
 
+// Layout sets menu layout
 func (c *ContextMenuWidget) Layout(widgets ...Widget) *ContextMenuWidget {
 	c.layout = Layout(widgets)
 	return c
 }
 
+// MouseButton sets mouse button that actives context menu
 func (c *ContextMenuWidget) MouseButton(mouseButton MouseButton) *ContextMenuWidget {
 	c.mouseButton = mouseButton
 	return c
 }
 
+// ID allows to manually set context menu's id (should not be used)
 func (c *ContextMenuWidget) ID(id string) *ContextMenuWidget {
 	c.id = id
 	return c
@@ -278,6 +284,7 @@ type DragIntWidget struct {
 	format string
 }
 
+// DragInt constructs a new drag int widget
 func DragInt(label string, value *int32, min, max int32) *DragIntWidget {
 	return &DragIntWidget{
 		label:  GenAutoID(label),
@@ -294,6 +301,9 @@ func (d *DragIntWidget) Speed(speed float32) *DragIntWidget {
 	return d
 }
 
+// Format sets value format.
+// NOTE: imgui calls the following formatting directive: fmt.Sprintf(format, value) so
+// you may want to put additional "%d" in your format string
 func (d *DragIntWidget) Format(format string) *DragIntWidget {
 	d.format = format
 	return d
