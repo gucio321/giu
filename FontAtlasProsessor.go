@@ -24,6 +24,9 @@ const (
 	windows           = "windows"
 )
 
+// static check to ensure if FontInfo implements fmt.Stringer interface
+var _ fmt.Stringer = &FontInfo{}
+
 // FontInfo represents a giu implementation of imgui font.
 type FontInfo struct {
 	fontName string
@@ -36,6 +39,7 @@ func (f *FontInfo) String() string {
 	return fmt.Sprintf("%s:%.2f", f.fontName, f.size)
 }
 
+// SetSize allows to change font size.
 func (f *FontInfo) SetSize(size float32) *FontInfo {
 	result := *f
 	result.size = size
@@ -108,6 +112,7 @@ func SetDefaultFontFromBytes(fontBytes []byte, size float32) {
 	}, defaultFonts...)
 }
 
+// GetDefaultFonts returns list of default fonts
 func GetDefaultFonts() []FontInfo {
 	return defaultFonts
 }

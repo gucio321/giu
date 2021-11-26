@@ -69,35 +69,7 @@ type ChildWidget struct {
 	layout Layout
 }
 
-// Build implements Widget interface.
-func (c *ChildWidget) Build() {
-	if imgui.BeginChildV(c.id, imgui.Vec2{X: c.width, Y: c.height}, c.border, int(c.flags)) {
-		c.layout.Build()
-	}
-
-	imgui.EndChild()
-}
-
-func (c *ChildWidget) Border(border bool) *ChildWidget {
-	c.border = border
-	return c
-}
-
-func (c *ChildWidget) Size(width, height float32) *ChildWidget {
-	c.width, c.height = width, height
-	return c
-}
-
-func (c *ChildWidget) Flags(flags WindowFlags) *ChildWidget {
-	c.flags = flags
-	return c
-}
-
-func (c *ChildWidget) Layout(widgets ...Widget) *ChildWidget {
-	c.layout = Layout(widgets)
-	return c
-}
-
+// Child constructs a new child widget
 func Child() *ChildWidget {
 	return &ChildWidget{
 		id:     GenAutoID("Child"),
@@ -107,6 +79,39 @@ func Child() *ChildWidget {
 		flags:  0,
 		layout: nil,
 	}
+}
+
+// Border sets if child widget should have visible border.
+func (c *ChildWidget) Border(border bool) *ChildWidget {
+	c.border = border
+	return c
+}
+
+// Size sets widget's size.
+func (c *ChildWidget) Size(width, height float32) *ChildWidget {
+	c.width, c.height = width, height
+	return c
+}
+
+// Flags allows to set child window flags.
+func (c *ChildWidget) Flags(flags WindowFlags) *ChildWidget {
+	c.flags = flags
+	return c
+}
+
+// Layout sets widgets inside of child widget.
+func (c *ChildWidget) Layout(widgets ...Widget) *ChildWidget {
+	c.layout = Layout(widgets)
+	return c
+}
+
+// Build implements Widget interface.
+func (c *ChildWidget) Build() {
+	if imgui.BeginChildV(c.id, imgui.Vec2{X: c.width, Y: c.height}, c.border, int(c.flags)) {
+		c.layout.Build()
+	}
+
+	imgui.EndChild()
 }
 
 var _ Widget = &ComboCustomWidget{}
@@ -343,6 +348,7 @@ type MainMenuBarWidget struct {
 	layout Layout
 }
 
+// MainMenuBar constructs new main menu bar widget.
 func MainMenuBar() *MainMenuBarWidget {
 	return &MainMenuBarWidget{
 		layout: nil,
@@ -368,6 +374,7 @@ type MenuBarWidget struct {
 	layout Layout
 }
 
+// MenuBar creates new menu bar widget.
 func MenuBar() *MenuBarWidget {
 	return &MenuBarWidget{
 		layout: nil,
@@ -396,6 +403,7 @@ type MenuItemWidget struct {
 	onClick  func()
 }
 
+// MenuItem creates new menu item widget.
 func MenuItem(label string) *MenuItemWidget {
 	return &MenuItemWidget{
 		label:    GenAutoID(label),
@@ -405,20 +413,24 @@ func MenuItem(label string) *MenuItemWidget {
 	}
 }
 
+// MenuItemf creates new menu item widget with formatted label
 func MenuItemf(format string, args ...interface{}) *MenuItemWidget {
 	return MenuItem(fmt.Sprintf(format, args...))
 }
 
+// Selected sets whether menu item is selected.
 func (m *MenuItemWidget) Selected(s bool) *MenuItemWidget {
 	m.selected = s
 	return m
 }
 
+// Enabled sets whether menu item could be clicked
 func (m *MenuItemWidget) Enabled(e bool) *MenuItemWidget {
 	m.enabled = e
 	return m
 }
 
+// OnClick sets click callback
 func (m *MenuItemWidget) OnClick(onClick func()) *MenuItemWidget {
 	m.onClick = onClick
 	return m
@@ -439,6 +451,7 @@ type MenuWidget struct {
 	layout  Layout
 }
 
+// Menu creates new menu widget
 func Menu(label string) *MenuWidget {
 	return &MenuWidget{
 		label:   GenAutoID(label),
@@ -447,6 +460,7 @@ func Menu(label string) *MenuWidget {
 	}
 }
 
+// Menuf creates new menu widget with a formatted label
 func Menuf(format string, args ...interface{}) *MenuWidget {
 	return Menu(fmt.Sprintf(format, args...))
 }
@@ -471,6 +485,7 @@ func (m *MenuWidget) Build() {
 
 var _ Widget = &ProgressBarWidget{}
 
+// ProgressBarWidget is a process progression bar.
 type ProgressBarWidget struct {
 	fraction float32
 	width    float32
@@ -478,6 +493,7 @@ type ProgressBarWidget struct {
 	overlay  string
 }
 
+// ProgressBar creates new progress bar widget.
 func ProgressBar(fraction float32) *ProgressBarWidget {
 	return &ProgressBarWidget{
 		fraction: fraction,
@@ -487,16 +503,19 @@ func ProgressBar(fraction float32) *ProgressBarWidget {
 	}
 }
 
+// Size sets bar's size.
 func (p *ProgressBarWidget) Size(width, height float32) *ProgressBarWidget {
 	p.width, p.height = width, height
 	return p
 }
 
+// Overlay sets indicator's overlay text
 func (p *ProgressBarWidget) Overlay(overlay string) *ProgressBarWidget {
 	p.overlay = tStr(overlay)
 	return p
 }
 
+// Overlayf does the same as Overlay but allows to specify formatting directives.
 func (p *ProgressBarWidget) Overlayf(format string, args ...interface{}) *ProgressBarWidget {
 	return p.Overlay(fmt.Sprintf(format, args...))
 }
@@ -508,22 +527,34 @@ func (p *ProgressBarWidget) Build() {
 
 var _ Widget = &SeparatorWidget{}
 
+// Separator is a gray, horizontal, window-wide separator line.
 type SeparatorWidget struct{}
+
+// Separator creates new separator widget
+func Separator() *SeparatorWidget {
+	return &SeparatorWidget{}
+}
 
 // Build implements Widget interface.
 func (s *SeparatorWidget) Build() {
 	imgui.Separator()
 }
 
-func Separator() *SeparatorWidget {
-	return &SeparatorWidget{}
-}
-
 var _ Widget = &DummyWidget{}
 
+// DummyWidget is just a placeholder. It moves drawing cursor by
+// [width, height] ahead on the screen.
 type DummyWidget struct {
 	width  float32
 	height float32
+}
+
+// Dummy creates new dummy widget
+func Dummy(width, height float32) *DummyWidget {
+	return &DummyWidget{
+		width:  width,
+		height: height,
+	}
 }
 
 // Build implements Widget interface.
@@ -541,15 +572,9 @@ func (d *DummyWidget) Build() {
 	imgui.Dummy(imgui.Vec2{X: d.width, Y: d.height})
 }
 
-func Dummy(width, height float32) *DummyWidget {
-	return &DummyWidget{
-		width:  width,
-		height: height,
-	}
-}
-
 var _ Widget = &TabItemWidget{}
 
+// TabItemWidget is a piece of TabBar.
 type TabItemWidget struct {
 	label  string
 	open   *bool
@@ -557,6 +582,7 @@ type TabItemWidget struct {
 	layout Layout
 }
 
+// TabItem creates new tab item widget
 func TabItem(label string) *TabItemWidget {
 	return &TabItemWidget{
 		label:  tStr(label),
@@ -566,20 +592,26 @@ func TabItem(label string) *TabItemWidget {
 	}
 }
 
+// TabItemf creates new tab item widget with formatted label.
 func TabItemf(format string, args ...interface{}) *TabItemWidget {
 	return TabItem(fmt.Sprintf(format, args...))
 }
 
+// IsOpen allows to CHECK whether tab item is currently open.
+// NOTE: do not edit this value. It'll not affect tab item state.
+// To do so, check TabItemFlagsSetSelected
 func (t *TabItemWidget) IsOpen(open *bool) *TabItemWidget {
 	t.open = open
 	return t
 }
 
+// Flags allows to set tab item flags
 func (t *TabItemWidget) Flags(flags TabItemFlags) *TabItemWidget {
 	t.flags = flags
 	return t
 }
 
+// Layout allows to set widgets that are visible when tab is selected.
 func (t *TabItemWidget) Layout(widgets ...Widget) *TabItemWidget {
 	t.layout = Layout(widgets)
 	return t
@@ -595,12 +627,14 @@ func (t *TabItemWidget) Build() {
 
 var _ Widget = &TabBarWidget{}
 
+// TabBarWidget is a set of tab items.
 type TabBarWidget struct {
 	id       string
 	flags    TabBarFlags
 	tabItems []*TabItemWidget
 }
 
+// TabBar creates new tab bar widget
 func TabBar() *TabBarWidget {
 	return &TabBarWidget{
 		id:    GenAutoID("TabBar"),
