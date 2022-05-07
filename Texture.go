@@ -35,14 +35,13 @@ func EnqueueNewTextureFromRgba(rgba image.Image, loadCb func(t *Texture)) {
 
 // NewTextureFromRgba creates a new texture from image.Image and, when it is done, calls loadCallback(loadedTexture).
 func NewTextureFromRgba(rgba image.Image, loadCallback func(*Texture)) {
-	Assert(Context.isRunning, "", "NewTextureFromRgba", "cannot load texture befor (*MasterWindow).Run call!")
 	loadTexture(rgba, loadCallback)
 }
 
 func loadTexture(rgba image.Image, loadCallback func(*Texture)) {
 	go func() {
 		Update()
-		result := mainthread.CallVal(func() interface{} {
+		result := mainthread.CallVal(func() any {
 			texID, err := Context.renderer.LoadImage(ImageToRgba(rgba))
 			return &loadImageResult{id: texID, err: err}
 		})
