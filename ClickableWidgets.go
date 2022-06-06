@@ -30,7 +30,7 @@ func Button(label string) *ButtonWidget {
 	}
 }
 
-// Buttonf creates button with formated label
+// Buttonf creates button with formatted label
 // NOTE: works like fmt.Sprintf (see `go doc fmt`).
 func Buttonf(format string, args ...any) *ButtonWidget {
 	return Button(fmt.Sprintf(format, args...))
@@ -121,7 +121,7 @@ func SmallButton(id string) *SmallButtonWidget {
 	}
 }
 
-// SmallButtonf allows to set formated label for small button.
+// SmallButtonf allows to set formatted label for small button.
 // It calls SmallButton(fmt.Sprintf(label, args...)).
 func SmallButtonf(format string, args ...any) *SmallButtonWidget {
 	return SmallButton(fmt.Sprintf(format, args...))
@@ -202,7 +202,7 @@ type ImageButtonWidget struct {
 	onClick      func()
 }
 
-// ImageButton  constructs image buton widget.
+// ImageButton  constructs image button widget.
 func ImageButton(texture *Texture) *ImageButtonWidget {
 	return &ImageButtonWidget{
 		texture:      texture,
@@ -273,9 +273,9 @@ func (b *ImageButtonWidget) FramePadding(padding int) *ImageButtonWidget {
 
 var _ Widget = &ImageButtonWithRgbaWidget{}
 
-// ImageButtonWithRgbaWidget does similar to ImageButtonWIdget,
+// ImageButtonWithRgbaWidget does similar to ImageButtonWidget,
 // but implements image.Image instead of giu.Texture. It is probably
-// more useful than the original ImageButtonWIdget.
+// more useful than the original ImageButtonWidget.
 type ImageButtonWithRgbaWidget struct {
 	*ImageButtonWidget
 	rgba image.Image
@@ -363,7 +363,7 @@ func Checkbox(text string, selected *bool) *CheckboxWidget {
 	}
 }
 
-// OnChange adds callback called when checkbox's state was changed.
+// OnChange adds callback called when checkboxes state was changed.
 func (c *CheckboxWidget) OnChange(onChange func()) *CheckboxWidget {
 	c.onChange = onChange
 	return c
@@ -387,7 +387,7 @@ type RadioButtonWidget struct {
 	onChange func()
 }
 
-// RadioButton creates a radio buton.
+// RadioButton creates a radio button.
 func RadioButton(text string, active bool) *RadioButtonWidget {
 	return &RadioButtonWidget{
 		text:     GenAutoID(text),
@@ -435,7 +435,7 @@ func Selectable(label string) *SelectableWidget {
 	}
 }
 
-// Selectablef creates a selectable widget with formated label.
+// Selectablef creates a selectable widget with formatted label.
 func Selectablef(format string, args ...any) *SelectableWidget {
 	return Selectable(fmt.Sprintf(format, args...))
 }
@@ -452,7 +452,7 @@ func (s *SelectableWidget) Flags(flags SelectableFlags) *SelectableWidget {
 	return s
 }
 
-// Size sets selectable's size.
+// Size sets selectable size.
 func (s *SelectableWidget) Size(width, height float32) *SelectableWidget {
 	s.width, s.height = width, height
 	return s
@@ -490,7 +490,7 @@ func (s *SelectableWidget) Build() {
 
 var _ Widget = &TreeNodeWidget{}
 
-// TreeNodeWidget is a a wide button with open/close state.
+// TreeNodeWidget is a wide button with open/close state.
 // if is opened, the `layout` is displayed below the widget.
 // It can be used to create certain lists, advanced settings sections e.t.c.
 type TreeNodeWidget struct {
@@ -531,7 +531,7 @@ func (t *TreeNodeWidget) Event(handler func()) *TreeNodeWidget {
 
 // Layout sets layout to be displayed when tree node is opened.
 func (t *TreeNodeWidget) Layout(widgets ...Widget) *TreeNodeWidget {
-	t.layout = Layout(widgets)
+	t.layout = widgets
 	return t
 }
 
