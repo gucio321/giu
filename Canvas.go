@@ -36,31 +36,31 @@ type DrawFlags int
 // draw flags enum:.
 const (
 	DrawFlagsNone DrawFlags = 0
-	// PathStroke(), AddPolyline(): specify that shape should be closed (portant: this is always == 1 for legacy reason).
+	// DrawFlagsClosed PathStroke(), AddPolyline(): specify that shape should be closed (important: this is always == 1 for legacy reason).
 	DrawFlagsClosed DrawFlags = 1 << 0
-	// AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners).
+	// DrawFlagsRoundCornersTopLeft AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners).
 	// Was 0x01.
 	DrawFlagsRoundCornersTopLeft DrawFlags = 1 << 4
-	// AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners).
+	// DrawFlagsRoundCornersTopRight AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners).
 	// Was 0x02.
 	DrawFlagsRoundCornersTopRight DrawFlags = 1 << 5
-	// AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners).
+	// DrawFlagsRoundCornersBottomLeft AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners).
 	// Was 0x04.
 	DrawFlagsRoundCornersBottomLeft DrawFlags = 1 << 6
-	// AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f,
+	// DrawFlagsRoundCornersBottomRight AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f,
 	// we default to all corners). Wax 0x08.
 	DrawFlagsRoundCornersBottomRight DrawFlags = 1 << 7
-	// AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
+	// DrawFlagsRoundCornersNone AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
 	DrawFlagsRoundCornersNone   DrawFlags = 1 << 8
-	DrawFlagsRoundCornersTop    DrawFlags = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight
-	DrawFlagsRoundCornersBottom DrawFlags = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
-	DrawFlagsRoundCornersLeft   DrawFlags = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersTopLeft
-	DrawFlagsRoundCornersRight  DrawFlags = DrawFlagsRoundCornersBottomRight | DrawFlagsRoundCornersTopRight
-	DrawFlagsRoundCornersAll    DrawFlags = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight |
+	DrawFlagsRoundCornersTop              = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight
+	DrawFlagsRoundCornersBottom           = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
+	DrawFlagsRoundCornersLeft             = DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersTopLeft
+	DrawFlagsRoundCornersRight            = DrawFlagsRoundCornersBottomRight | DrawFlagsRoundCornersTopRight
+	DrawFlagsRoundCornersAll              = DrawFlagsRoundCornersTopLeft | DrawFlagsRoundCornersTopRight |
 		DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight
-	// Default to ALL corners if none of the RoundCornersXX flags are specified.
-	DrawFlagsRoundCornersDefault DrawFlags = DrawFlagsRoundCornersAll
-	DrawFlagsRoundCornersMask    DrawFlags = DrawFlagsRoundCornersAll | DrawFlagsRoundCornersNone
+	// DrawFlagsRoundCornersDefault Default to ALL corners if none of the RoundCornersXX flags are specified.
+	DrawFlagsRoundCornersDefault = DrawFlagsRoundCornersAll
+	DrawFlagsRoundCornersMask    = DrawFlagsRoundCornersAll | DrawFlagsRoundCornersNone
 )
 
 // AddRect draws a rectangle.
@@ -115,42 +115,52 @@ func (c *Canvas) AddQuadFilled(p1, p2, p3, p4 image.Point, col color.Color) {
 
 // Stateful path API, add points then finish with PathFillConvex() or PathStroke().
 
+// PathClear clears the current path.
 func (c *Canvas) PathClear() {
 	c.drawlist.PathClear()
 }
 
+// PathLineTo adds a line to the path.
 func (c *Canvas) PathLineTo(pos image.Point) {
 	c.drawlist.PathLineTo(ToVec2(pos))
 }
 
+// PathLineToMergeDuplicate adds a line to the path.
 func (c *Canvas) PathLineToMergeDuplicate(pos image.Point) {
 	c.drawlist.PathLineToMergeDuplicate(ToVec2(pos))
 }
 
+// PathFillConvex adds a convex polygon to the path.
 func (c *Canvas) PathFillConvex(col color.Color) {
 	c.drawlist.PathFillConvex(ToVec4Color(col))
 }
 
+// PathStroke adds a stroked path to the canvas.
 func (c *Canvas) PathStroke(col color.Color, closed bool, thickness float32) {
 	c.drawlist.PathStroke(ToVec4Color(col), closed, thickness)
 }
 
+// PathArcTo adds an arc to the path.
 func (c *Canvas) PathArcTo(center image.Point, radius, min, max float32, numSegments int) {
 	c.drawlist.PathArcTo(ToVec2(center), radius, min, max, numSegments)
 }
 
+// PathArcToFast adds an arc to the path.
 func (c *Canvas) PathArcToFast(center image.Point, radius float32, min12, max12 int) {
 	c.drawlist.PathArcToFast(ToVec2(center), radius, min12, max12)
 }
 
+// PathBezierCubicCurveTo adds a cubic bezier curve to the path.
 func (c *Canvas) PathBezierCubicCurveTo(p1, p2, p3 image.Point, numSegments int) {
 	c.drawlist.PathBezierCubicCurveTo(ToVec2(p1), ToVec2(p2), ToVec2(p3), numSegments)
 }
 
+// AddImage draws an image.
 func (c *Canvas) AddImage(texture *Texture, pMin, pMax image.Point) {
 	c.drawlist.AddImage(texture.id, ToVec2(pMin), ToVec2(pMax))
 }
 
+// AddImageV adds an image (with parameters).
 func (c *Canvas) AddImageV(texture *Texture, pMin, pMax, uvMin, uvMax image.Point, col color.Color) {
 	c.drawlist.AddImageV(texture.id, ToVec2(pMin), ToVec2(pMax), ToVec2(uvMin), ToVec2(uvMax), ToVec4Color(col))
 }
