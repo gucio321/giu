@@ -7,11 +7,11 @@ import (
 	"github.com/AllenDang/imgui-go"
 )
 
-// AlignmentType represents a bype of alignment to use with AlignSetter.
+// AlignmentType represents a type of alignment to use with AlignSetter.
 type AlignmentType byte
 
 const (
-	// AlignLeft is here just for clearity.
+	// AlignLeft is here just for clarity.
 	// if set, no action is taken so don't use it.
 	AlignLeft AlignmentType = iota
 	// AlignCenter centers widget.
@@ -87,7 +87,7 @@ func Align(at AlignmentType) *AlignmentSetter {
 
 // To sets a layout, alignment should be applied to.
 func (a *AlignmentSetter) To(widgets ...Widget) *AlignmentSetter {
-	a.layout = Layout(widgets)
+	a.layout = widgets
 	return a
 }
 
@@ -107,7 +107,7 @@ func (a *AlignmentSetter) Build() {
 	}
 
 	a.layout.Range(func(item Widget) {
-		// if item is inil, just skip it
+		// if item is nil, just skip it
 		if item == nil {
 			return
 		}
@@ -156,7 +156,7 @@ func (a *AlignmentSetter) Build() {
 //
 // This function is just a workaround used in giu.
 //
-// NOTE: user-definied widgets, which contains more than one
+// NOTE: user-defined widgets, which contains more than one
 // giu widget will be processed incorrectly (only width of the last built
 // widget will be processed)
 //
@@ -168,7 +168,7 @@ func (a *AlignmentSetter) Build() {
 // if you find anything else, please report it on
 // https://github.com/AllenDang/giu Any contribution is appreciated!
 func GetWidgetWidth(w Widget) (result float32) {
-	imgui.PushID(GenAutoID("GetWIdgetWidthMeasurement"))
+	imgui.PushID(GenAutoID("GetWidgetWidthMeasurement"))
 	defer imgui.PopID()
 
 	// save cursor position before rendering
