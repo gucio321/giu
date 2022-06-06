@@ -59,7 +59,7 @@ func IsMouseReleased(button MouseButton) bool {
 	return imgui.IsMouseReleased(int(button))
 }
 
-// IsMouseDoubleClicked returns true if mouse button `button` is double clicked.
+// IsMouseDoubleClicked returns true if mouse button `button` is double-clicked.
 func IsMouseDoubleClicked(button MouseButton) bool {
 	return imgui.IsMouseDoubleClicked(int(button))
 }
