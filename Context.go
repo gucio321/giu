@@ -34,7 +34,7 @@ type context struct {
 	// Indicate whether current application is running
 	isAlive bool
 
-	// States will used by custom widget to store data
+	// States will be used by custom widget to store data
 	state sync.Map
 
 	InputHandler InputHandler
@@ -43,7 +43,7 @@ type context struct {
 	textureLoadingQueue *queue.Queue
 }
 
-func CreateContext(p imgui.Platform, r imgui.Renderer) context {
+func createContext(p imgui.Platform, r imgui.Renderer) context {
 	result := context{
 		platform: p,
 		renderer: r,
@@ -59,7 +59,6 @@ func CreateContext(p imgui.Platform, r imgui.Renderer) context {
 		r.SetFontTexture(fontAtlas)
 	} else {
 		result.FontAtlas.shouldRebuildFontAtlas = true
-		// result.FontAtlas.rebuildFontAtlas()
 	}
 
 	return result
@@ -116,7 +115,7 @@ func (c *context) GetState(id string) any {
 	return nil
 }
 
-// Get widget index for current layout.
+// GetWidgetIndex for current layout.
 func (c *context) GetWidgetIndex() int {
 	i := c.widgetIndexCounter
 	c.widgetIndexCounter++
