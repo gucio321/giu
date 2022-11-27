@@ -278,7 +278,7 @@ func (p *BarHPlot) Shift(shift float64) *BarHPlot {
 }
 
 // Offset sets offset.
-func (p *BarHPlot) Offset(offset int) *BarHPlot {
+func (p *BarHPlot) Offset(offset int32) *BarHPlot {
 	p.offset = offset
 	return p
 }
@@ -442,16 +442,17 @@ func (p *PieChartPlot) Angle0(a float64) *PieChartPlot {
 }
 
 func (p *PieChartPlot) Plot() {
-	cimgui.ImPlotPieChart(
-		Context.FontAtlas.RegisterStringSlice(p.labels),
-		p.values,
-		p.x,
-		p.y,
-		p.radius,
-		p.normalize,
-		p.labelFormat,
-		p.angle0,
-	)
+	panic("missing in cimgui/not implemented")
+	//cimgui.ImPlotPieChart(
+	//	Context.FontAtlas.RegisterStringSlice(p.labels),
+	//	p.values,
+	//	p.x,
+	//	p.y,
+	//	p.radius,
+	//	p.normalize,
+	//	p.labelFormat,
+	//	p.angle0,
+	//)
 }
 
 type ScatterPlot struct {
@@ -487,7 +488,8 @@ func (p *ScatterPlot) Offset(offset int) *ScatterPlot {
 }
 
 func (p *ScatterPlot) Plot() {
-	imgui.ImPlotScatter(Context.FontAtlas.RegisterString(p.label), p.values, p.xscale, p.x0, p.offset)
+	panic("not implemented")
+	//imgui.ImPlotScatter(Context.FontAtlas.RegisterString(p.label), p.values, p.xscale, p.x0, p.offset)
 }
 
 type ScatterXYPlot struct {
@@ -511,5 +513,6 @@ func (p *ScatterXYPlot) Offset(offset int) *ScatterXYPlot {
 }
 
 func (p *ScatterXYPlot) Plot() {
-	imgui.ImPlotScatterXY(Context.FontAtlas.RegisterString(p.label), p.xs, p.ys, p.offset)
+	panic("not implemented")
+	//imgui.ImPlotScatterXY(Context.FontAtlas.RegisterString(p.label), p.xs, p.ys, p.offset)
 }
