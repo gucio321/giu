@@ -3,7 +3,7 @@ package giu
 import (
 	"fmt"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 // SingleWindow creates one window filling all available space
@@ -15,11 +15,11 @@ func SingleWindow() *WindowWidget {
 
 	return Window(title).
 		Flags(
-			imgui.WindowFlagsNoTitleBar|
-				imgui.WindowFlagsNoCollapse|
-				imgui.WindowFlagsNoScrollbar|
-				imgui.WindowFlagsNoMove|
-				imgui.WindowFlagsNoResize).
+			WindowFlags(cimgui.WindowFlags_NoTitleBar)|
+				WindowFlags(cimgui.WindowFlags_NoCollapse)|
+				WindowFlags(cimgui.WindowFlags_NoScrollbar)|
+				WindowFlags(cimgui.WindowFlags_NoMove)|
+				WindowFlags(cimgui.WindowFlags_NoResize)).
 		Size(size[0], size[1])
 }
 
@@ -30,12 +30,12 @@ func SingleWindowWithMenuBar() *WindowWidget {
 
 	return Window(title).
 		Flags(
-			imgui.WindowFlagsNoTitleBar|
-				imgui.WindowFlagsNoCollapse|
-				imgui.WindowFlagsNoScrollbar|
-				imgui.WindowFlagsNoMove|
-				imgui.WindowFlagsMenuBar|
-				imgui.WindowFlagsNoResize).Size(size[0], size[1])
+			WindowFlags(cimgui.WindowFlags_NoTitleBar)|
+				WindowFlags(cimgui.WindowFlags_NoCollapse)|
+				WindowFlags(cimgui.WindowFlags_NoScrollbar)|
+				WindowFlags(cimgui.WindowFlags_NoMove)|
+				WindowFlags(cimgui.WindowFlags_MenuBar)|
+				WindowFlags(cimgui.WindowFlags_NoResize)).Size(size[0], size[1])
 }
 
 var _ Disposable = &windowState{}
@@ -43,7 +43,7 @@ var _ Disposable = &windowState{}
 type windowState struct {
 	hasFocus bool
 	currentPosition,
-	currentSize imgui.Vec2
+	currentSize cimgui.ImVec2
 }
 
 // Dispose implements Disposable interface.
@@ -51,7 +51,7 @@ func (s *windowState) Dispose() {
 	// noop
 }
 
-// WindowWidget represents imgui.Window
+// WindowWidget represents cimgui.Window
 // Windows are used to display ui widgets.
 // They are in second place in the giu hierarchy (after the MasterWindow)
 // NOTE: to disable multiple window, use SingleWindow.
@@ -109,16 +109,16 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 
 	ws := w.getState()
 
-	if w.flags&imgui.WindowFlagsNoMove != 0 && w.flags&imgui.WindowFlagsNoResize != 0 {
-		imgui.SetNextWindowPos(imgui.Vec2{X: w.x, Y: w.y})
-		imgui.SetNextWindowSize(imgui.Vec2{X: w.width, Y: w.height})
+	if w.flags&WindowFlags(cimgui.WindowFlags_NoMove) != 0 && w.flags&WindowFlags(cimgui.WindowFlags_NoResize) != 0 {
+		cimgui.SetNextWindowPos(cimgui.ImVec2{X: w.x, Y: w.y})
+		cimgui.SetNextWindowSize(cimgui.ImVec2{X: w.width, Y: w.height})
 	} else {
-		imgui.SetNextWindowPosV(imgui.Vec2{X: w.x, Y: w.y}, imgui.ConditionFirstUseEver, imgui.Vec2{X: 0, Y: 0})
-		imgui.SetNextWindowSizeV(imgui.Vec2{X: w.width, Y: w.height}, imgui.ConditionFirstUseEver)
+		cimgui.SetNextWindowPosV(cimgui.ImVec2{X: w.x, Y: w.y}, cimgui.Cond_FirstUseEver, cimgui.ImVec2{X: 0, Y: 0})
+		cimgui.SetNextWindowSizeV(cimgui.ImVec2{X: w.width, Y: w.height}, cimgui.Cond_FirstUseEver)
 	}
 
 	if w.bringToFront {
-		imgui.SetNextWindowFocus()
+		cimgui.SetNextWindowFocus()
 
 		w.bringToFront = false
 	}
@@ -132,18 +132,18 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 
 			ws.hasFocus = hasFocus
 
-			ws.currentPosition = imgui.WindowPos()
-			ws.currentSize = imgui.WindowSize()
+			ws.currentPosition = cimgui.GetWindowPos()
+			ws.currentSize = cimgui.GetWindowSize()
 		}),
 	)
 
-	showed := imgui.BeginV(Context.FontAtlas.RegisterString(w.title), w.open, int(w.flags))
+	showed := cimgui.BeginV(Context.FontAtlas.RegisterString(w.title), w.open, cimgui.WindowFlags(w.flags))
 
 	if showed {
 		Layout(widgets).Build()
 	}
 
-	imgui.End()
+	cimgui.End()
 }
 
 // CurrentPosition returns a current position of the window.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 // GenAutoID automatically generates fidget's id.
@@ -15,7 +15,7 @@ func GenAutoID(id string) string {
 var _ Widget = &RowWidget{}
 
 // RowWidget joins a layout into one line
-// calls imgui.SameLine().
+// calls cimgui.SameLine().
 type RowWidget struct {
 	widgets Layout
 }
@@ -43,7 +43,7 @@ func (l *RowWidget) Build() {
 			}
 
 			if !isFirst {
-				imgui.SameLine()
+				cimgui.SameLine()
 			} else {
 				isFirst = false
 			}
@@ -53,10 +53,10 @@ func (l *RowWidget) Build() {
 	})
 }
 
-// SameLine wraps imgui.SomeLine
+// SameLine wraps cimgui.SomeLine
 // Don't use if you don't have to (use RowWidget instead).
 func SameLine() {
-	imgui.SameLine()
+	cimgui.SameLine()
 }
 
 var _ Widget = &ChildWidget{}
@@ -72,11 +72,11 @@ type ChildWidget struct {
 
 // Build implements Widget interface.
 func (c *ChildWidget) Build() {
-	if imgui.BeginChildV(c.id, imgui.Vec2{X: c.width, Y: c.height}, c.border, int(c.flags)) {
+	if cimgui.BeginChild_StrV(c.id, cimgui.ImVec2{X: c.width, Y: c.height}, c.border, cimgui.WindowFlags(c.flags)) {
 		c.layout.Build()
 	}
 
-	imgui.EndChild()
+	cimgui.EndChild()
 }
 
 func (c *ChildWidget) Border(border bool) *ChildWidget {
@@ -159,13 +159,13 @@ func (cc *ComboCustomWidget) Size(width float32) *ComboCustomWidget {
 // Build implements Widget interface.
 func (cc *ComboCustomWidget) Build() {
 	if cc.width > 0 {
-		imgui.PushItemWidth(cc.width)
-		defer imgui.PopItemWidth()
+		cimgui.PushItemWidth(cc.width)
+		defer cimgui.PopItemWidth()
 	}
 
-	if imgui.BeginComboV(Context.FontAtlas.RegisterString(cc.label), cc.previewValue, int(cc.flags)) {
+	if cimgui.BeginComboV(Context.FontAtlas.RegisterString(cc.label), cc.previewValue, cimgui.ComboFlags(cc.flags)) {
 		cc.layout.Build()
-		imgui.EndCombo()
+		cimgui.EndCombo()
 	}
 }
 
@@ -199,13 +199,13 @@ func Combo(label, previewValue string, items []string, selected *int32) *ComboWi
 // Build implements Widget interface.
 func (c *ComboWidget) Build() {
 	if c.width > 0 {
-		imgui.PushItemWidth(c.width)
-		defer imgui.PopItemWidth()
+		cimgui.PushItemWidth(c.width)
+		defer cimgui.PopItemWidth()
 	}
 
-	if imgui.BeginComboV(Context.FontAtlas.RegisterString(c.label), c.previewValue, int(c.flags)) {
+	if cimgui.BeginComboV(Context.FontAtlas.RegisterString(c.label), c.previewValue, cimgui.ComboFlags(c.flags)) {
 		for i, item := range c.items {
-			if imgui.Selectable(item) {
+			if cimgui.Selectable_Bool(item) {
 				*c.selected = int32(i)
 				if c.onChange != nil {
 					c.onChange()
@@ -213,7 +213,7 @@ func (c *ComboWidget) Build() {
 			}
 		}
 
-		imgui.EndCombo()
+		cimgui.EndCombo()
 	}
 }
 
@@ -268,9 +268,9 @@ func (c *ContextMenuWidget) ID(id string) *ContextMenuWidget {
 
 // Build implements Widget interface.
 func (c *ContextMenuWidget) Build() {
-	if imgui.BeginPopupContextItemV(c.id, int(c.mouseButton)) {
+	if cimgui.BeginPopupContextItemV(c.id, cimgui.ImGuiPopupFlags(c.mouseButton)) {
 		c.layout.Build()
-		imgui.EndPopup()
+		cimgui.EndPopup()
 	}
 }
 
@@ -308,7 +308,7 @@ func (d *DragIntWidget) Format(format string) *DragIntWidget {
 
 // Build implements Widget interface.
 func (d *DragIntWidget) Build() {
-	imgui.DragIntV(Context.FontAtlas.RegisterString(d.label), d.value, d.speed, d.min, d.max, d.format)
+	cimgui.DragIntV(Context.FontAtlas.RegisterString(d.label), d.value, d.speed, d.min, d.max, d.format, 0)
 }
 
 var _ Widget = &ColumnWidget{}
@@ -327,11 +327,11 @@ func Column(widgets ...Widget) *ColumnWidget {
 
 // Build implements Widget interface.
 func (g *ColumnWidget) Build() {
-	imgui.BeginGroup()
+	cimgui.BeginGroup()
 
 	g.widgets.Build()
 
-	imgui.EndGroup()
+	cimgui.EndGroup()
 }
 
 var _ Widget = &MainMenuBarWidget{}
@@ -353,9 +353,9 @@ func (m *MainMenuBarWidget) Layout(widgets ...Widget) *MainMenuBarWidget {
 
 // Build implements Widget interface.
 func (m *MainMenuBarWidget) Build() {
-	if imgui.BeginMainMenuBar() {
+	if cimgui.BeginMainMenuBar() {
 		m.layout.Build()
-		imgui.EndMainMenuBar()
+		cimgui.EndMainMenuBar()
 	}
 }
 
@@ -378,9 +378,9 @@ func (m *MenuBarWidget) Layout(widgets ...Widget) *MenuBarWidget {
 
 // Build implements Widget interface.
 func (m *MenuBarWidget) Build() {
-	if imgui.BeginMenuBar() {
+	if cimgui.BeginMenuBar() {
 		m.layout.Build()
-		imgui.EndMenuBar()
+		cimgui.EndMenuBar()
 	}
 }
 
@@ -430,7 +430,7 @@ func (m *MenuItemWidget) OnClick(onClick func()) *MenuItemWidget {
 
 // Build implements Widget interface.
 func (m *MenuItemWidget) Build() {
-	if imgui.MenuItemV(Context.FontAtlas.RegisterString(m.label), m.shortcut, m.selected, m.enabled) && m.onClick != nil {
+	if cimgui.MenuItem_BoolV(Context.FontAtlas.RegisterString(m.label), m.shortcut, m.selected, m.enabled) && m.onClick != nil {
 		m.onClick()
 	}
 }
@@ -467,9 +467,9 @@ func (m *MenuWidget) Layout(widgets ...Widget) *MenuWidget {
 
 // Build implements Widget interface.
 func (m *MenuWidget) Build() {
-	if imgui.BeginMenuV(Context.FontAtlas.RegisterString(m.label), m.enabled) {
+	if cimgui.BeginMenuV(Context.FontAtlas.RegisterString(m.label), m.enabled) {
 		m.layout.Build()
-		imgui.EndMenu()
+		cimgui.EndMenu()
 	}
 }
 
@@ -507,7 +507,7 @@ func (p *ProgressBarWidget) Overlayf(format string, args ...any) *ProgressBarWid
 
 // Build implements Widget interface.
 func (p *ProgressBarWidget) Build() {
-	imgui.ProgressBarV(p.fraction, imgui.Vec2{X: p.width, Y: p.height}, p.overlay)
+	cimgui.ProgressBarV(p.fraction, cimgui.ImVec2{X: p.width, Y: p.height}, p.overlay)
 }
 
 var _ Widget = &SeparatorWidget{}
@@ -516,7 +516,7 @@ type SeparatorWidget struct{}
 
 // Build implements Widget interface.
 func (s *SeparatorWidget) Build() {
-	imgui.Separator()
+	cimgui.Separator()
 }
 
 func Separator() *SeparatorWidget {
@@ -542,7 +542,7 @@ func (d *DummyWidget) Build() {
 		d.height = h + d.height
 	}
 
-	imgui.Dummy(imgui.Vec2{X: d.width, Y: d.height})
+	cimgui.Dummy(cimgui.ImVec2{X: d.width, Y: d.height})
 }
 
 func Dummy(width, height float32) *DummyWidget {
@@ -589,9 +589,9 @@ func (t *TabItemWidget) Layout(widgets ...Widget) *TabItemWidget {
 
 // BuildTabItem executes tab item build steps.
 func (t *TabItemWidget) BuildTabItem() {
-	if imgui.BeginTabItemV(t.label, t.open, int(t.flags)) {
+	if cimgui.BeginTabItemV(t.label, t.open, cimgui.TabItemFlags(t.flags)) {
 		t.layout.Build()
-		imgui.EndTabItem()
+		cimgui.EndTabItem()
 	}
 }
 
@@ -627,12 +627,12 @@ func (t *TabBarWidget) TabItems(items ...*TabItemWidget) *TabBarWidget {
 
 // Build implements Widget interface.
 func (t *TabBarWidget) Build() {
-	if imgui.BeginTabBarV(t.id, int(t.flags)) {
+	if cimgui.BeginTabBarV(t.id, cimgui.TabBarFlags(t.flags)) {
 		for _, ti := range t.tabItems {
 			ti.BuildTabItem()
 		}
 
-		imgui.EndTabBar()
+		cimgui.EndTabBar()
 	}
 }
 
@@ -645,13 +645,13 @@ type TooltipWidget struct {
 
 // Build implements Widget interface.
 func (t *TooltipWidget) Build() {
-	if imgui.IsItemHovered() {
+	if cimgui.IsItemHovered() {
 		if t.layout != nil {
-			imgui.BeginTooltip()
+			cimgui.BeginTooltip()
 			t.layout.Build()
-			imgui.EndTooltip()
+			cimgui.EndTooltip()
 		} else {
-			imgui.SetTooltip(t.tip)
+			cimgui.SetTooltip(t.tip)
 		}
 	}
 }
@@ -678,7 +678,7 @@ type SpacingWidget struct{}
 
 // Build implements Widget interface.
 func (s *SpacingWidget) Build() {
-	imgui.Spacing()
+	cimgui.Spacing()
 }
 
 func Spacing() *SpacingWidget {
@@ -699,7 +699,7 @@ func ColorEdit(label string, c *color.RGBA) *ColorEditWidget {
 	return &ColorEditWidget{
 		label: GenAutoID(label),
 		color: c,
-		flags: ColorEditFlagsNone,
+		// flags: ColorEditFlagsNone,
 	}
 }
 
@@ -729,15 +729,15 @@ func (ce *ColorEditWidget) Build() {
 	}
 
 	if ce.width > 0 {
-		imgui.PushItemWidth(ce.width)
+		cimgui.PushItemWidth(ce.width)
 	}
 
-	if imgui.ColorEdit4V(
+	if cimgui.ColorEdit4V(
 		Context.FontAtlas.RegisterString(ce.label),
 		&col,
 		int(ce.flags),
 	) {
-		*ce.color = Vec4ToRGBA(imgui.Vec4{
+		*ce.color = Vec4ToRGBA(cimgui.ImVec4{
 			X: col[0],
 			Y: col[1],
 			Z: col[2],
@@ -749,6 +749,6 @@ func (ce *ColorEditWidget) Build() {
 	}
 
 	if ce.width > 0 {
-		imgui.PopItemWidth()
+		cimgui.PopItemWidth()
 	}
 }

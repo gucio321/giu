@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/AllenDang/cimgui-go"
 	"github.com/AllenDang/go-findfont"
-	"github.com/AllenDang/imgui-go"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 	defaultFontSize   = 14
 )
 
-// FontInfo represents a giu implementation of imgui font.
+// FontInfo represents a giu implementation of cimgui font.
 type FontInfo struct {
 	fontName string
 	fontPath string
@@ -50,13 +50,13 @@ type FontAtlas struct {
 	stringMap              sync.Map // key is rune, value indicates whether it's a new rune.
 	defaultFonts           []FontInfo
 	extraFonts             []FontInfo
-	extraFontMap           map[string]*imgui.Font
+	extraFontMap           map[string]*cimgui.ImFont
 	fontSize               float32
 }
 
 func newFontAtlas() *FontAtlas {
 	result := FontAtlas{
-		extraFontMap: make(map[string]*imgui.Font),
+		extraFontMap: make(map[string]*cimgui.ImFont),
 		fontSize:     defaultFontSize,
 	}
 
@@ -240,7 +240,7 @@ func (a *FontAtlas) rebuildFontAtlas() {
 		return
 	}
 
-	fonts := Context.IO().Fonts()
+	fonts := Context.IO().GetFonts()
 	fonts.Clear()
 
 	var sb strings.Builder
@@ -254,20 +254,20 @@ func (a *FontAtlas) rebuildFontAtlas() {
 		return true
 	})
 
-	ranges := imgui.NewGlyphRanges()
-	builder := imgui.NewFontGlyphRangesBuilder()
+	ranges := cimgui.NewGlyphRange()
+	builder := cimgui.NewImFontGlyphRangesBuilder()
 
 	// Because we pre-registered numbers, so default string map's length should greater then 11.
 	if sb.Len() > len(preRegisterString) {
 		builder.AddText(sb.String())
 	} else {
-		builder.AddRanges(fonts.GlyphRangesDefault())
+		builder.AddRanges(fonts.GetGlyphRangesDefault())
 	}
 
 	builder.BuildRanges(ranges)
 
 	if len(a.defaultFonts) > 0 {
-		fontConfig := imgui.NewFontConfig()
+		fontConfig := cimgui.NewImFontConfig()
 		fontConfig.SetOversampleH(2)
 		fontConfig.SetOversampleV(2)
 		fontConfig.SetRasterizerMultiply(1.5)
@@ -304,12 +304,12 @@ func (a *FontAtlas) rebuildFontAtlas() {
 			fontInfo.size *= Context.GetPlatform().GetContentScale()
 		}
 
-		// Store imgui.Font for PushFont
-		var f imgui.Font
+		// Store cimgui.ImFont for PushFont
+		var f cimgui.ImFont
 		if len(fontInfo.fontByte) == 0 {
-			f = fonts.AddFontFromFileTTFV(fontInfo.fontPath, fontInfo.size, imgui.DefaultFontConfig, ranges.Data())
+			f = fonts.AddFontFromFileTTFV(fontInfo.fontPath, fontInfo.size, cimgui.DefaultFontConfig, ranges.Data())
 		} else {
-			f = fonts.AddFontFromMemoryTTFV(fontInfo.fontByte, fontInfo.size, imgui.DefaultFontConfig, ranges.Data())
+			f = fonts.AddFontFromMemoryTTFV(fontInfo.fontByte, fontInfo.size, cimgui.DefaultFontConfig, ranges.Data())
 		}
 
 		a.extraFontMap[fontInfo.String()] = &f

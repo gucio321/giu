@@ -5,7 +5,7 @@ import (
 	"image"
 	"time"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 var _ Widget = &HSplitterWidget{}
@@ -65,21 +65,20 @@ func (h *HSplitterWidget) Build() {
 	ptMin := image.Pt(centerX-width/2, centerY-height/2)
 	ptMax := image.Pt(centerX+width/2, centerY+height/2)
 
-	style := imgui.CurrentStyle()
-	c := Vec4ToRGBA(style.GetColor(imgui.StyleColorScrollbarGrab))
+	c := Vec4ToRGBA(cimgui.GetStyleColorVec4(cimgui.Col_ScrollbarGrab))
 
 	// Place a invisible button to capture event.
-	imgui.InvisibleButton(h.id, imgui.Vec2{X: h.width, Y: h.height})
+	cimgui.InvisibleButton(h.id, cimgui.ImVec2{X: h.width, Y: h.height})
 
-	if imgui.IsItemActive() {
-		*(h.delta) = imgui.CurrentIO().GetMouseDelta().Y
+	if cimgui.IsItemActive() {
+		*(h.delta) = cimgui.GetIO().GetMouseDelta().Y
 	} else {
 		*(h.delta) = 0
 	}
 
-	if imgui.IsItemHovered() {
-		imgui.SetMouseCursor(imgui.MouseCursorResizeNS)
-		c = Vec4ToRGBA(style.GetColor(imgui.StyleColorScrollbarGrabActive))
+	if cimgui.IsItemHovered() {
+		cimgui.SetMouseCursor(cimgui.MouseCursor_ResizeNS)
+		c = Vec4ToRGBA(cimgui.GetStyleColorVec4(cimgui.Col_ScrollbarGrabActive))
 	}
 
 	// Draw a line in the very center
@@ -144,21 +143,20 @@ func (v *VSplitterWidget) Build() {
 	ptMin := image.Pt(centerX-width/2, centerY-height/2)
 	ptMax := image.Pt(centerX+width/2, centerY+height/2)
 
-	style := imgui.CurrentStyle()
-	c := Vec4ToRGBA(style.GetColor(imgui.StyleColorScrollbarGrab))
+	c := Vec4ToRGBA(cimgui.GetStyleColorVec4(cimgui.Col_ScrollbarGrab))
 
 	// Place a invisible button to capture event.
-	imgui.InvisibleButton(v.id, imgui.Vec2{X: v.width, Y: v.height})
+	cimgui.InvisibleButton(v.id, cimgui.ImVec2{X: v.width, Y: v.height})
 
-	if imgui.IsItemActive() {
-		*(v.delta) = imgui.CurrentIO().GetMouseDelta().X
+	if cimgui.IsItemActive() {
+		*(v.delta) = cimgui.GetIO().GetMouseDelta().X
 	} else {
 		*(v.delta) = 0
 	}
 
-	if imgui.IsItemHovered() {
-		imgui.SetMouseCursor(imgui.MouseCursorResizeEW)
-		c = Vec4ToRGBA(style.GetColor(imgui.StyleColorScrollbarGrabActive))
+	if cimgui.IsItemHovered() {
+		cimgui.SetMouseCursor(cimgui.MouseCursor_ResizeEW)
+		c = Vec4ToRGBA(cimgui.GetStyleColorVec4(cimgui.Col_ScrollbarGrabActive))
 	}
 
 	// Draw a line in the very center
@@ -192,15 +190,15 @@ func (ttr *TreeTableRowWidget) Flags(flags TreeNodeFlags) *TreeTableRowWidget {
 
 // BuildTreeTableRow executes table row building steps.
 func (ttr *TreeTableRowWidget) BuildTreeTableRow() {
-	imgui.TableNextRow(0, 0)
-	imgui.TableNextColumn()
+	cimgui.TableNextRowV(0, 0)
+	cimgui.TableNextColumn()
 
 	open := false
 	if len(ttr.children) > 0 {
-		open = imgui.TreeNodeV(Context.FontAtlas.RegisterString(ttr.label), int(ttr.flags))
+		open = cimgui.TreeNodeEx_StrV(Context.FontAtlas.RegisterString(ttr.label), cimgui.TreeNodeFlags(ttr.flags))
 	} else {
 		ttr.flags |= TreeNodeFlagsLeaf | TreeNodeFlagsNoTreePushOnOpen
-		imgui.TreeNodeV(Context.FontAtlas.RegisterString(ttr.label), int(ttr.flags))
+		cimgui.TreeNodeEx_StrV(Context.FontAtlas.RegisterString(ttr.label), cimgui.TreeNodeFlags(ttr.flags))
 	}
 
 	for _, w := range ttr.layout {
@@ -209,7 +207,7 @@ func (ttr *TreeTableRowWidget) BuildTreeTableRow() {
 			*ContextMenuWidget, *PopupModalWidget:
 			// noop
 		default:
-			imgui.TableNextColumn()
+			cimgui.TableNextColumn()
 		}
 
 		w.Build()
@@ -220,7 +218,7 @@ func (ttr *TreeTableRowWidget) BuildTreeTableRow() {
 			c.BuildTreeTableRow()
 		}
 
-		imgui.TreePop()
+		cimgui.TreePop()
 	}
 }
 
@@ -229,7 +227,7 @@ var _ Widget = &TreeTableWidget{}
 type TreeTableWidget struct {
 	id           string
 	flags        TableFlags
-	size         imgui.Vec2
+	size         cimgui.ImVec2
 	columns      []*TableColumnWidget
 	rows         []*TreeTableRowWidget
 	freezeRow    int
@@ -254,7 +252,7 @@ func (tt *TreeTableWidget) Freeze(col, row int) *TreeTableWidget {
 }
 
 func (tt *TreeTableWidget) Size(width, height float32) *TreeTableWidget {
-	tt.size = imgui.Vec2{X: width, Y: height}
+	tt.size = cimgui.ImVec2{X: width, Y: height}
 	return tt
 }
 
@@ -284,9 +282,9 @@ func (tt *TreeTableWidget) Build() {
 		colCount = len(tt.rows[0].layout) + 1
 	}
 
-	if imgui.BeginTable(tt.id, colCount, imgui.TableFlags(tt.flags), tt.size, 0) {
+	if cimgui.BeginTableV(tt.id, int32(colCount), cimgui.TableFlags(tt.flags), tt.size, 0) {
 		if tt.freezeColumn >= 0 && tt.freezeRow >= 0 {
-			imgui.TableSetupScrollFreeze(tt.freezeColumn, tt.freezeRow)
+			cimgui.TableSetupScrollFreeze(int32(tt.freezeColumn), int32(tt.freezeRow))
 		}
 
 		if len(tt.columns) > 0 {
@@ -294,14 +292,14 @@ func (tt *TreeTableWidget) Build() {
 				col.BuildTableColumn()
 			}
 
-			imgui.TableHeadersRow()
+			cimgui.TableHeadersRow()
 		}
 
 		for _, row := range tt.rows {
 			row.BuildTreeTableRow()
 		}
 
-		imgui.EndTable()
+		cimgui.EndTable()
 	}
 }
 
@@ -376,7 +374,7 @@ func (c *ConditionWidget) Build() {
 func RangeBuilder(id string, values []any, builder func(int, any) Widget) Layout {
 	var layout Layout
 
-	layout = append(layout, Custom(func() { imgui.PushID(id) }))
+	layout = append(layout, Custom(func() { cimgui.PushID_Str(id) }))
 
 	if len(values) > 0 && builder != nil {
 		for i, v := range values {
@@ -386,7 +384,7 @@ func RangeBuilder(id string, values []any, builder func(int, any) Widget) Layout
 		}
 	}
 
-	layout = append(layout, Custom(func() { imgui.PopID() }))
+	layout = append(layout, Custom(func() { cimgui.PopID() }))
 
 	return layout
 }
@@ -469,13 +467,13 @@ func (l *ListBoxWidget) Build() {
 
 	child := Child().Border(l.border).Size(l.width, l.height).Layout(Layout{
 		Custom(func() {
-			clipper := imgui.NewListClipper()
-			defer clipper.Delete()
+			clipper := cimgui.NewImGuiListClipper()
+			defer clipper.Destroy()
 
-			clipper.Begin(len(l.items))
+			clipper.Begin(int32(len(l.items)))
 
 			for clipper.Step() {
-				for i := clipper.DisplayStart(); i < clipper.DisplayEnd(); i++ {
+				for i := clipper.GetDisplayStart(); i < clipper.GetDisplayEnd(); i++ {
 					selected := i == state.selectedIndex
 					item := l.items[i]
 					Selectable(item).Selected(selected).Flags(SelectableFlagsAllowDoubleClick).OnClick(func() {
@@ -582,8 +580,8 @@ func (d *DatePickerWidget) Build() {
 		return
 	}
 
-	imgui.PushID(d.id)
-	defer imgui.PopID()
+	cimgui.PushID_Str(d.id)
+	defer cimgui.PopID()
 
 	if d.width > 0 {
 		PushItemWidth(d.width)
@@ -591,9 +589,9 @@ func (d *DatePickerWidget) Build() {
 		defer PopItemWidth()
 	}
 
-	if imgui.BeginComboV(d.id+"##Combo", d.date.Format(d.getFormat()), imgui.ComboFlagsHeightLargest) {
+	if cimgui.BeginComboV(d.id+"##Combo", d.date.Format(d.getFormat()), cimgui.ComboFlags_HeightLargest) {
 		// --- [Build year widget] ---
-		imgui.AlignTextToFramePadding()
+		cimgui.AlignTextToFramePadding()
 
 		const yearButtonSize = 25
 
@@ -656,7 +654,7 @@ func (d *DatePickerWidget) Build() {
 
 		Table().Flags(TableFlagsBorders | TableFlagsSizingStretchSame).Columns(columns...).Rows(rows...).Build()
 
-		imgui.EndCombo()
+		cimgui.EndCombo()
 	}
 }
 
@@ -698,12 +696,12 @@ func (d *DatePickerWidget) getDaysGroups() (days [][]int) {
 
 func (d *DatePickerWidget) calendarField(day int) Widget {
 	today := time.Now()
-	highlightColor := imgui.CurrentStyle().GetColor(imgui.StyleColorPlotHistogram)
+	highlightColor := cimgui.GetStyleColorVec4(cimgui.Col_PlotHistogram)
 
 	return Custom(func() {
 		isToday := d.date.Year() == today.Year() && d.date.Month() == today.Month() && day == today.Day()
 		if isToday {
-			imgui.PushStyleColor(imgui.StyleColorText, highlightColor)
+			cimgui.PushStyleColor_Vec4(cimgui.Col_Text, highlightColor)
 		}
 
 		Selectable(fmt.Sprintf("%02d", day)).Selected(isToday).OnClick(func() {
@@ -715,7 +713,7 @@ func (d *DatePickerWidget) calendarField(day int) Widget {
 		}).Build()
 
 		if isToday {
-			imgui.PopStyleColor()
+			cimgui.PopStyleColor()
 		}
 	})
 }

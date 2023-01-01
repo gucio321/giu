@@ -1,6 +1,6 @@
 package giu
 
-import "github.com/AllenDang/imgui-go"
+import "github.com/AllenDang/cimgui-go"
 
 var _ Widget = &StackWidget{}
 
@@ -39,12 +39,12 @@ func (s *StackWidget) Build() {
 	}
 
 	// build invisible layouts with 0 alpha
-	imgui.PushStyleVarFloat(imgui.StyleVarAlpha, 0)
+	cimgui.PushStyleVar_Float(cimgui.StyleVar_Alpha, 0)
 
 	for _, l := range layouts {
 		SetCursorScreenPos(visiblePos)
 		l.Build()
 	}
 
-	imgui.PopStyleVar()
+	cimgui.PopStyleVar()
 }

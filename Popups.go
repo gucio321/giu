@@ -1,19 +1,19 @@
 package giu
 
 import (
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 // OpenPopup opens a popup with specified id.
 // NOTE: you need to build this popup first (see Pop(Modal)Widget).
 func OpenPopup(name string) {
-	imgui.OpenPopup(name)
+	cimgui.OpenPopup_Str(name)
 }
 
 // CloseCurrentPopup closes currently opened popup.
 // If no popups opened, no action will be taken.
 func CloseCurrentPopup() {
-	imgui.CloseCurrentPopup()
+	cimgui.CloseCurrentPopup()
 }
 
 var _ Widget = &PopupWidget{}
@@ -49,9 +49,9 @@ func (p *PopupWidget) Layout(widgets ...Widget) *PopupWidget {
 
 // Build implements Widget interface.
 func (p *PopupWidget) Build() {
-	if imgui.BeginPopup(p.name, int(p.flags)) {
+	if cimgui.BeginPopupV(p.name, cimgui.WindowFlags(p.flags)) {
 		p.layout.Build()
-		imgui.EndPopup()
+		cimgui.EndPopup()
 	}
 }
 
@@ -98,8 +98,8 @@ func (p *PopupModalWidget) Layout(widgets ...Widget) *PopupModalWidget {
 
 // Build implements Widget interface.
 func (p *PopupModalWidget) Build() {
-	if imgui.BeginPopupModalV(p.name, p.open, int(p.flags)) {
+	if cimgui.BeginPopupModalV(p.name, p.open, cimgui.WindowFlags(p.flags)) {
 		p.layout.Build()
-		imgui.EndPopup()
+		cimgui.EndPopup()
 	}
 }

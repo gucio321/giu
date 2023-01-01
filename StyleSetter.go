@@ -3,12 +3,12 @@ package giu
 import (
 	"image/color"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 var _ Widget = &StyleSetter{}
 
-// StyleSetter is a user-friendly way to manage imgui styles.
+// StyleSetter is a user-friendly way to manage cimgui styles.
 // For style IDs see StyleIDs.go, for detailed instruction of using styles, see Styles.go.
 type StyleSetter struct {
 	colors   map[StyleColorID]color.Color
@@ -17,7 +17,7 @@ type StyleSetter struct {
 	disabled bool
 	layout   Layout
 
-	// set by imgui.PushFont inside ss.Push() method
+	// set by cimgui.PushFont inside ss.Push() method
 	isFontPushed bool
 }
 
@@ -38,7 +38,7 @@ func (ss *StyleSetter) SetColor(colorID StyleColorID, col color.Color) *StyleSet
 
 // SetStyle sets styleVarID to width and height.
 func (ss *StyleSetter) SetStyle(varID StyleVarID, width, height float32) *StyleSetter {
-	ss.styles[varID] = imgui.Vec2{X: width, Y: height}
+	ss.styles[varID] = cimgui.ImVec2{X: width, Y: height}
 	return ss
 }
 
@@ -112,38 +112,38 @@ func (ss *StyleSetter) Build() {
 }
 
 // Push allows to manually activate Styles written inside of StyleSetter
-// it works like imgui.PushXXX() stuff, but for group of style variables,
+// it works like cimgui.PushXXX() stuff, but for group of style variables,
 // just like StyleSetter.
 // NOTE: DO NOT ORGET to call ss.Pop() at the end of styled layout, because
 // else you'll get ImGui exception!
 func (ss *StyleSetter) Push() {
 	// Push colors
 	for k, v := range ss.colors {
-		imgui.PushStyleColor(imgui.StyleColorID(k), ToVec4Color(v))
+		cimgui.PushStyleColor_Vec4(cimgui.Col(k), ToVec4Color(v))
 	}
 
 	// push style vars
 	for k, v := range ss.styles {
 		if k.IsVec2() {
-			var value imgui.Vec2
+			var value cimgui.ImVec2
 			switch typed := v.(type) {
-			case imgui.Vec2:
+			case cimgui.ImVec2:
 				value = typed
 			case float32:
-				value = imgui.Vec2{X: typed, Y: typed}
+				value = cimgui.ImVec2{X: typed, Y: typed}
 			}
 
-			imgui.PushStyleVarVec2(imgui.StyleVarID(k), value)
+			cimgui.PushStyleVar_Vec2(cimgui.StyleVar(k), value)
 		} else {
 			var value float32
 			switch typed := v.(type) {
 			case float32:
 				value = typed
-			case imgui.Vec2:
+			case cimgui.ImVec2:
 				value = typed.X
 			}
 
-			imgui.PushStyleVarFloat(imgui.StyleVarID(k), value)
+			cimgui.PushStyleVar_Float(cimgui.StyleVar(k), value)
 		}
 	}
 
@@ -152,16 +152,20 @@ func (ss *StyleSetter) Push() {
 		ss.isFontPushed = PushFont(ss.font)
 	}
 
-	imgui.BeginDisabled(ss.disabled)
+	if ss.disabled {
+		cimgui.BeginDisabled()
+	}
 }
 
 // Pop allows to manually pop the whole StyleSetter (use after Push!)
 func (ss *StyleSetter) Pop() {
 	if ss.isFontPushed {
-		imgui.PopFont()
+		cimgui.PopFont()
 	}
 
-	imgui.EndDisabled()
-	imgui.PopStyleColorV(len(ss.colors))
-	imgui.PopStyleVarV(len(ss.styles))
+	if ss.disabled {
+		cimgui.EndDisabled()
+	}
+	cimgui.PopStyleColorV(int32(len(ss.colors)))
+	cimgui.PopStyleVarV(int32(len(ss.styles)))
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 	"github.com/sahilm/fuzzy"
 )
 
@@ -17,7 +17,7 @@ type InputTextMultilineWidget struct {
 	text           *string
 	width, height  float32
 	flags          InputTextFlags
-	cb             imgui.InputTextCallback
+	cb             cimgui.InputTextCallback
 	scrollToBottom bool
 	onChange       func()
 }
@@ -52,8 +52,8 @@ func (i *InputTextMultilineWidget) Flags(flags InputTextFlags) *InputTextMultili
 	return i
 }
 
-// Callback sets imgui.InputTextCallback.
-func (i *InputTextMultilineWidget) Callback(cb imgui.InputTextCallback) *InputTextMultilineWidget {
+// Callback sets cimgui.InputTextCallback.
+func (i *InputTextMultilineWidget) Callback(cb cimgui.InputTextCallback) *InputTextMultilineWidget {
 	i.cb = cb
 	return i
 }
@@ -78,10 +78,10 @@ func (i *InputTextMultilineWidget) AutoScrollToBottom(b bool) *InputTextMultilin
 
 // Build implements Widget interface.
 func (i *InputTextMultilineWidget) Build() {
-	if imgui.InputTextMultilineV(
+	if cimgui.InputTextMultilineV(
 		Context.FontAtlas.RegisterString(i.label),
 		Context.FontAtlas.RegisterStringPointer(i.text),
-		imgui.Vec2{
+		cimgui.ImVec2{
 			X: i.width,
 			Y: i.height,
 		},
@@ -91,9 +91,9 @@ func (i *InputTextMultilineWidget) Build() {
 	}
 
 	if i.scrollToBottom {
-		imgui.BeginChild(i.label)
-		imgui.SetScrollHereY(1.0)
-		imgui.EndChild()
+		cimgui.BeginChild(i.label)
+		cimgui.SetScrollHereY(1.0)
+		cimgui.EndChild()
 	}
 }
 
@@ -110,7 +110,7 @@ func Bullet() *BulletWidget {
 
 // Build implements Widget interface.
 func (b *BulletWidget) Build() {
-	imgui.Bullet()
+	cimgui.Bullet()
 }
 
 var _ Widget = &BulletTextWidget{}
@@ -135,7 +135,7 @@ func BulletTextf(format string, args ...any) *BulletTextWidget {
 
 // Build implements Widget interface.
 func (bt *BulletTextWidget) Build() {
-	imgui.BulletText(bt.text)
+	cimgui.BulletText(bt.text)
 }
 
 var _ Disposable = &inputTextState{}
@@ -159,7 +159,7 @@ type InputTextWidget struct {
 	width      float32
 	candidates []string
 	flags      InputTextFlags
-	cb         imgui.InputTextCallback
+	cb         cimgui.InputTextCallback
 	onChange   func()
 }
 
@@ -213,7 +213,7 @@ func (i *InputTextWidget) Flags(flags InputTextFlags) *InputTextWidget {
 }
 
 // Callback sets input text callback.
-func (i *InputTextWidget) Callback(cb imgui.InputTextCallback) *InputTextWidget {
+func (i *InputTextWidget) Callback(cb cimgui.InputTextCallback) *InputTextWidget {
 	i.cb = cb
 	return i
 }
@@ -239,7 +239,7 @@ func (i *InputTextWidget) Build() {
 		defer PopItemWidth()
 	}
 
-	isChanged := imgui.InputTextWithHint(i.label, i.hint, Context.FontAtlas.RegisterStringPointer(i.value), int(i.flags), i.cb)
+	isChanged := cimgui.InputTextWithHint(i.label, i.hint, Context.FontAtlas.RegisterStringPointer(i.value), int(i.flags), i.cb)
 
 	if isChanged && i.onChange != nil {
 		i.onChange()
@@ -265,10 +265,10 @@ func (i *InputTextWidget) Build() {
 			labels[i] = Label(m.Str)
 		}
 
-		SetNextWindowPos(imgui.GetItemRectMin().X, imgui.GetItemRectMax().Y)
-		imgui.BeginTooltip()
+		SetNextWindowPos(cimgui.GetItemRectMin().X, cimgui.GetItemRectMax().Y)
+		cimgui.BeginTooltip()
 		labels.Build()
-		imgui.EndTooltip()
+		cimgui.EndTooltip()
 
 		// Press enter will replace value string with first match candidate
 		if IsKeyPressed(KeyEnter) {
@@ -354,7 +354,7 @@ func (i *InputIntWidget) Build() {
 		defer PopItemWidth()
 	}
 
-	if imgui.InputIntV(i.label, i.value, i.step, i.stepFast, int(i.flags)) && i.onChange != nil {
+	if cimgui.InputIntV(i.label, i.value, i.step, i.stepFast, int(i.flags)) && i.onChange != nil {
 		i.onChange()
 	}
 }
@@ -440,7 +440,7 @@ func (i *InputFloatWidget) Build() {
 		defer PopItemWidth()
 	}
 
-	if imgui.InputFloatV(i.label, i.value, i.step, i.stepFast, i.format, int(i.flags)) && i.onChange != nil {
+	if cimgui.InputFloatV(i.label, i.value, i.step, i.stepFast, i.format, int(i.flags)) && i.onChange != nil {
 		i.onChange()
 	}
 }
@@ -493,5 +493,5 @@ func (l *LabelWidget) Build() {
 		}
 	}
 
-	imgui.Text(l.label)
+	cimgui.Text(l.label)
 }

@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 
+	"github.com/AllenDang/cimgui-go"
 	"github.com/AllenDang/giu"
 	g "github.com/AllenDang/giu"
-	"github.com/AllenDang/imgui-go"
 )
 
 var (
 	editor     *g.CodeEditorWidget
-	errMarkers imgui.ErrorMarkers
+	errMarkers cimgui.ErrorMarkers
 )
 
 func loop() {
@@ -47,7 +47,7 @@ func loop() {
 }
 
 func main() {
-	errMarkers = imgui.NewErrorMarkers()
+	errMarkers = cimgui.NewErrorMarkers()
 
 	editor = g.CodeEditor().
 		ShowWhitespaces(false).

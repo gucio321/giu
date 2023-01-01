@@ -1,12 +1,12 @@
 package giu
 
 // Direction represents a ArrowButton direction.
-type Direction uint8
+type Direction cimgui.Dir
 
 // directions.
 const (
-	DirectionLeft Direction = iota
-	DirectionRight
-	DirectionUp
-	DirectionDown
+	DirectionLeft  Direction = cimgui.Dir_Left
+	DirectionRight Direction = cimgui.Dir_Right
+	DirectionUp    Direction = cimgui.Dir_Up
+	DirectionDown  Direction = cimgui.Dir_Down
 )

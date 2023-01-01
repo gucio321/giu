@@ -3,7 +3,7 @@ package giu
 import (
 	"image/color"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 type TableRowWidget struct {
@@ -39,7 +39,7 @@ func (r *TableRowWidget) MinHeight(height float64) *TableRowWidget {
 
 // BuildTableRow executes table row build steps.
 func (r *TableRowWidget) BuildTableRow() {
-	imgui.TableNextRow(imgui.TableRowFlags(r.flags), r.minRowHeight)
+	cimgui.TableNextRowV(cimgui.TableRowFlags(r.flags), float32(r.minRowHeight))
 
 	for _, w := range r.layout {
 		switch w.(type) {
@@ -47,14 +47,14 @@ func (r *TableRowWidget) BuildTableRow() {
 			*ContextMenuWidget, *PopupModalWidget:
 			// noop
 		default:
-			imgui.TableNextColumn()
+			cimgui.TableNextColumn()
 		}
 
 		w.Build()
 	}
 
 	if r.bgColor != nil {
-		imgui.TableSetBgColor(imgui.TableBgTarget_RowBg0, uint32(imgui.GetColorU32(ToVec4Color(r.bgColor))), -1)
+		cimgui.TableSetBgColorV(cimgui.ImGuiTableBgTarget_RowBg0, uint32(cimgui.GetColorU32_Vec4(ToVec4Color(r.bgColor))), -1)
 	}
 }
 
@@ -91,7 +91,7 @@ func (c *TableColumnWidget) UserID(id uint32) *TableColumnWidget {
 
 // BuildTableColumn executes table column build steps.
 func (c *TableColumnWidget) BuildTableColumn() {
-	imgui.TableSetupColumn(c.label, imgui.TableColumnFlags(c.flags), c.innerWidthOrWeight, c.userID)
+	cimgui.TableSetupColumnV(c.label, cimgui.TableColumnFlags(c.flags), c.innerWidthOrWeight, c.userID)
 }
 
 var _ Widget = &TableWidget{}
@@ -99,7 +99,7 @@ var _ Widget = &TableWidget{}
 type TableWidget struct {
 	id           string
 	flags        TableFlags
-	size         imgui.Vec2
+	size         cimgui.ImVec2
 	innerWidth   float64
 	rows         []*TableRowWidget
 	columns      []*TableColumnWidget
@@ -151,7 +151,7 @@ func (t *TableWidget) Rows(rows ...*TableRowWidget) *TableWidget {
 }
 
 func (t *TableWidget) Size(width, height float32) *TableWidget {
-	t.size = imgui.Vec2{X: width, Y: height}
+	t.size = cimgui.ImVec2{X: width, Y: height}
 	return t
 }
 
@@ -176,9 +176,9 @@ func (t *TableWidget) Build() {
 		colCount = len(t.rows[0].layout)
 	}
 
-	if imgui.BeginTable(t.id, colCount, imgui.TableFlags(t.flags), t.size, t.innerWidth) {
+	if cimgui.BeginTableV(t.id, int32(colCount), cimgui.TableFlags(t.flags), t.size, float32(t.innerWidth)) {
 		if t.freezeColumn >= 0 && t.freezeRow >= 0 {
-			imgui.TableSetupScrollFreeze(t.freezeColumn, t.freezeRow)
+			cimgui.TableSetupScrollFreeze(int32(t.freezeColumn), int32(t.freezeRow))
 		}
 
 		if len(t.columns) > 0 {
@@ -186,17 +186,17 @@ func (t *TableWidget) Build() {
 				col.BuildTableColumn()
 			}
 
-			imgui.TableHeadersRow()
+			cimgui.TableHeadersRow()
 		}
 
 		if t.fastMode {
-			clipper := imgui.NewListClipper()
-			defer clipper.Delete()
+			clipper := cimgui.NewImGuiListClipper()
+			defer clipper.Destroy()
 
-			clipper.Begin(len(t.rows))
+			clipper.Begin(int32(len(t.rows)))
 
 			for clipper.Step() {
-				for i := clipper.DisplayStart(); i < clipper.DisplayEnd(); i++ {
+				for i := clipper.GetDisplayStart(); i < clipper.GetDisplayEnd(); i++ {
 					row := t.rows[i]
 					row.BuildTableRow()
 				}
@@ -209,6 +209,6 @@ func (t *TableWidget) Build() {
 			}
 		}
 
-		imgui.EndTable()
+		cimgui.EndTable()
 	}
 }

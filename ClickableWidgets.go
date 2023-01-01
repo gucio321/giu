@@ -5,7 +5,7 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 	"golang.org/x/image/colornames"
 )
 
@@ -59,11 +59,11 @@ func (b *ButtonWidget) Size(width, height float32) *ButtonWidget {
 // Build implements Widget interface.
 func (b *ButtonWidget) Build() {
 	if b.disabled {
-		imgui.BeginDisabled(true)
-		defer imgui.EndDisabled()
+		cimgui.BeginDisabled()
+		defer cimgui.EndDisabled()
 	}
 
-	if imgui.ButtonV(Context.FontAtlas.RegisterString(b.id), imgui.Vec2{X: b.width, Y: b.height}) && b.onClick != nil {
+	if cimgui.ButtonV(Context.FontAtlas.RegisterString(b.id), cimgui.ImVec2{X: b.width, Y: b.height}) && b.onClick != nil {
 		b.onClick()
 	}
 }
@@ -100,7 +100,7 @@ func (b *ArrowButtonWidget) ID(id string) *ArrowButtonWidget {
 
 // Build implements Widget interface.
 func (b *ArrowButtonWidget) Build() {
-	if imgui.ArrowButton(b.id, uint8(b.dir)) && b.onClick != nil {
+	if cimgui.ArrowButton(b.id, cimgui.Dir(b.dir)) && b.onClick != nil {
 		b.onClick()
 	}
 }
@@ -135,7 +135,7 @@ func (b *SmallButtonWidget) OnClick(onClick func()) *SmallButtonWidget {
 
 // Build implements Widget interface.
 func (b *SmallButtonWidget) Build() {
-	if imgui.SmallButton(Context.FontAtlas.RegisterString(b.id)) && b.onClick != nil {
+	if cimgui.SmallButton(Context.FontAtlas.RegisterString(b.id)) && b.onClick != nil {
 		b.onClick()
 	}
 }
@@ -182,7 +182,7 @@ func (b *InvisibleButtonWidget) ID(id string) *InvisibleButtonWidget {
 
 // Build implements Widget interface.
 func (b *InvisibleButtonWidget) Build() {
-	if imgui.InvisibleButton(Context.FontAtlas.RegisterString(b.id), imgui.Vec2{X: b.width, Y: b.height}) && b.onClick != nil {
+	if cimgui.InvisibleButton(Context.FontAtlas.RegisterString(b.id), cimgui.ImVec2{X: b.width, Y: b.height}) && b.onClick != nil {
 		b.onClick()
 	}
 }
@@ -223,9 +223,9 @@ func (b *ImageButtonWidget) Build() {
 		return
 	}
 
-	if imgui.ImageButtonV(
+	if cimgui.ImageButtonV(
 		b.texture.id,
-		imgui.Vec2{X: b.width, Y: b.height},
+		cimgui.ImVec2{X: b.width, Y: b.height},
 		ToVec2(b.uv0), ToVec2(b.uv1),
 		b.framePadding, ToVec4Color(b.bgColor),
 		ToVec4Color(b.tintColor),
@@ -368,7 +368,7 @@ func (c *CheckboxWidget) OnChange(onChange func()) *CheckboxWidget {
 
 // Build implements Widget interface.
 func (c *CheckboxWidget) Build() {
-	if imgui.Checkbox(Context.FontAtlas.RegisterString(c.text), c.selected) && c.onChange != nil {
+	if cimgui.Checkbox(Context.FontAtlas.RegisterString(c.text), c.selected) && c.onChange != nil {
 		c.onChange()
 	}
 }
@@ -401,7 +401,7 @@ func (r *RadioButtonWidget) OnChange(onChange func()) *RadioButtonWidget {
 
 // Build implements Widget interface.
 func (r *RadioButtonWidget) Build() {
-	if imgui.RadioButton(Context.FontAtlas.RegisterString(r.text), r.active) && r.onChange != nil {
+	if cimgui.RadioButton_Bool(Context.FontAtlas.RegisterString(r.text), r.active) && r.onChange != nil {
 		r.onChange()
 	}
 }
@@ -476,7 +476,7 @@ func (s *SelectableWidget) Build() {
 		s.flags |= SelectableFlagsAllowDoubleClick
 	}
 
-	if imgui.SelectableV(Context.FontAtlas.RegisterString(s.label), s.selected, int(s.flags), imgui.Vec2{X: s.width, Y: s.height}) && s.onClick != nil {
+	if cimgui.Selectable_BoolV(Context.FontAtlas.RegisterString(s.label), s.selected, cimgui.SelectableFlags(s.flags), cimgui.ImVec2{X: s.width, Y: s.height}) && s.onClick != nil {
 		s.onClick()
 	}
 
@@ -534,7 +534,7 @@ func (t *TreeNodeWidget) Layout(widgets ...Widget) *TreeNodeWidget {
 
 // Build implements Widget interface.
 func (t *TreeNodeWidget) Build() {
-	open := imgui.TreeNodeV(t.label, int(t.flags))
+	open := cimgui.TreeNodeEx_StrV(t.label, cimgui.TreeNodeFlags(t.flags))
 
 	if t.eventHandler != nil {
 		t.eventHandler()
@@ -543,8 +543,8 @@ func (t *TreeNodeWidget) Build() {
 	if open {
 		t.layout.Build()
 
-		if (t.flags & imgui.TreeNodeFlagsNoTreePushOnOpen) == 0 {
-			imgui.TreePop()
+		if (t.flags & cimgui.TreeNodeFlags_NoTreePushOnOpen) == 0 {
+			cimgui.TreePop()
 		}
 	}
 }

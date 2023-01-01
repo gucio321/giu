@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"image"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 // These constants holds information about where GetWidgetWidth should proceed their
@@ -37,7 +37,7 @@ const (
 // forceApplyWidth argument allows you to ask giu to force-set width
 // of `widget`
 // NOTE that forcing width doesn't work for each widget type! For example
-// Button won't work because its size is set by argument to imgui call
+// Button won't work because its size is set by argument to cimgui call
 // not PushWidth api.
 func AlignManually(alignmentType AlignmentType, widget Widget, widgetWidth float32, forceApplyWidth bool) Widget {
 	return Custom(func() {
@@ -69,7 +69,7 @@ func AlignManually(alignmentType AlignmentType, widget Widget, widgetWidth float
 			defer PopItemWidth()
 		}
 
-		imgui.SameLine()
+		cimgui.SameLine()
 		widget.Build()
 	})
 }
@@ -162,9 +162,9 @@ func (a *AlignmentSetter) Build() {
 
 // GetWidgetWidth returns a width of widget
 // NOTE: THIS IS A BETA SOLUTION and may contain bugs
-// in most cases, you may want to use supported by imgui GetItemRectSize.
+// in most cases, you may want to use supported by cimgui GetItemRectSize.
 // There is an upstream issue for this problem:
-// https://github.com/ocornut/imgui/issues/3714
+// https://github.com/ocornut/cimgui/issues/3714
 //
 // This function is just a workaround used in giu.
 //
@@ -177,8 +177,8 @@ func (a *AlignmentSetter) Build() {
 // if you find anything else, please report it on
 // https://github.com/AllenDang/giu Any contribution is appreciated!
 func GetWidgetWidth(w Widget) (result float32) {
-	imgui.PushID(GenAutoID("GetWidgetWidthMeasurement"))
-	defer imgui.PopID()
+	cimgui.PushID_Str(GenAutoID("GetWidgetWidthMeasurement"))
+	defer cimgui.PopID()
 
 	// save cursor position before doing anything
 	currentPos := GetCursorPos()
@@ -188,13 +188,13 @@ func GetWidgetWidth(w Widget) (result float32) {
 	SetCursorPos(startPos)
 
 	// render widget in `dry` mode
-	imgui.PushStyleVarFloat(imgui.StyleVarAlpha, 0)
+	cimgui.PushStyleVar_Float(cimgui.StyleVar_Alpha, 0)
 	w.Build()
-	imgui.PopStyleVar()
+	cimgui.PopStyleVar()
 
 	// save widget's width
 	// check cursor position
-	imgui.SameLine()
+	cimgui.SameLine()
 
 	spacingW, _ := GetItemSpacing()
 	result = float32(GetCursorPos().X-startPos.X) - spacingW

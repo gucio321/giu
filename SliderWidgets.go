@@ -3,7 +3,7 @@ package giu
 import (
 	"fmt"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 var _ Widget = &SliderIntWidget{}
@@ -33,7 +33,7 @@ func SliderInt(value *int32, min, max int32) *SliderIntWidget {
 }
 
 // Format sets data format displayed on the slider
-// NOTE: on C side of imgui, it will be processed like:
+// NOTE: on C side of cimgui, it will be processed like:
 // fmt.Sprintf(format, currentValue) so you can do e.g.
 // SLiderInt(...).Format("My age is %d") and %d will be replaced with current value.
 func (s *SliderIntWidget) Format(format string) *SliderIntWidget {
@@ -72,7 +72,7 @@ func (s *SliderIntWidget) Build() {
 		defer PopItemWidth()
 	}
 
-	if imgui.SliderIntV(Context.FontAtlas.RegisterString(s.label), s.value, s.min, s.max, s.format) && s.onChange != nil {
+	if cimgui.SliderIntV(Context.FontAtlas.RegisterString(s.label), s.value, s.min, s.max, s.format, 0) && s.onChange != nil {
 		s.onChange()
 	}
 }
@@ -143,14 +143,14 @@ func (vs *VSliderIntWidget) Labelf(format string, args ...any) *VSliderIntWidget
 
 // Build implements Widget interface.
 func (vs *VSliderIntWidget) Build() {
-	if imgui.VSliderIntV(
+	if cimgui.VSliderIntV(
 		Context.FontAtlas.RegisterString(vs.label),
-		imgui.Vec2{X: vs.width, Y: vs.height},
+		cimgui.ImVec2{X: vs.width, Y: vs.height},
 		vs.value,
 		vs.min,
 		vs.max,
 		vs.format,
-		int(vs.flags),
+		cimgui.SliderFlags(vs.flags),
 	) && vs.onChange != nil {
 		vs.onChange()
 	}
@@ -222,7 +222,7 @@ func (sf *SliderFloatWidget) Build() {
 		defer PopItemWidth()
 	}
 
-	if imgui.SliderFloatV(Context.FontAtlas.RegisterString(sf.label), sf.value, sf.min, sf.max, sf.format, 1.0) && sf.onChange != nil {
+	if cimgui.SliderFloatV(Context.FontAtlas.RegisterString(sf.label), sf.value, sf.min, sf.max, sf.format, 1.0) && sf.onChange != nil {
 		sf.onChange()
 	}
 }

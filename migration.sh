@@ -1,7 +1,7 @@
 #!/bin/bash
-git add migration.*
-git commit --amend
-git stash
+#git add migration.*
+#git commit --amend
+#git stash
 files=$(find . -iname \*go)
 
 # switch to cimgui-go

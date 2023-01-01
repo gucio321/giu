@@ -5,14 +5,14 @@ import (
 	"image"
 	"runtime"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 	"github.com/faiface/mainthread"
 )
 
-// Texture represents imgui.TextureID.
-// It is base unit of images in imgui.
+// Texture represents cimgui.ImTextureID.
+// It is base unit of images in cimgui.
 type Texture struct {
-	id imgui.TextureID
+	id cimgui.ImTextureID
 }
 
 type textureLoadRequest struct {
@@ -21,7 +21,7 @@ type textureLoadRequest struct {
 }
 
 type loadImageResult struct {
-	id  imgui.TextureID
+	id  cimgui.ImTextureID
 	err error
 }
 
@@ -66,8 +66,8 @@ func loadTexture(rgba image.Image, loadCallback func(*Texture)) {
 	}()
 }
 
-// ToTexture converts imgui.TextureID to Texture.
-func ToTexture(textureID imgui.TextureID) *Texture {
+// ToTexture converts cimgui.ImTextureID to Texture.
+func ToTexture(textureID cimgui.ImTextureID) *Texture {
 	return &Texture{id: textureID}
 }
 

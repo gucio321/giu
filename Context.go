@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 	"gopkg.in/eapache/queue.v1"
 )
 
@@ -32,8 +32,8 @@ type context struct {
 	// see https://github.com/faiface/mainthread/pull/4
 	isRunning bool
 
-	renderer imgui.Renderer
-	platform imgui.Platform
+	renderer cimgui.Renderer
+	platform cimgui.Platform
 
 	widgetIndexCounter int
 
@@ -51,7 +51,7 @@ type context struct {
 	cssStylesheet cssStylesheet
 }
 
-func CreateContext(p imgui.Platform, r imgui.Renderer) *context {
+func CreateContext(p cimgui.Platform, r cimgui.Renderer) *context {
 	result := context{
 		platform:      p,
 		renderer:      r,
@@ -63,8 +63,8 @@ func CreateContext(p imgui.Platform, r imgui.Renderer) *context {
 	// Create font
 	if len(result.FontAtlas.defaultFonts) == 0 {
 		io := result.IO()
-		io.Fonts().AddFontDefault()
-		fontAtlas := io.Fonts().TextureDataRGBA32()
+		io.GetFonts().AddFontDefault()
+		fontAtlas := io.GetFonts().TextureDataRGBA32()
 		r.SetFontTexture(fontAtlas)
 	} else {
 		result.FontAtlas.shouldRebuildFontAtlas = true
@@ -73,16 +73,16 @@ func CreateContext(p imgui.Platform, r imgui.Renderer) *context {
 	return &result
 }
 
-func (c *context) GetRenderer() imgui.Renderer {
+func (c *context) GetRenderer() cimgui.Renderer {
 	return c.renderer
 }
 
-func (c *context) GetPlatform() imgui.Platform {
+func (c *context) GetPlatform() cimgui.Platform {
 	return c.platform
 }
 
-func (c *context) IO() imgui.IO {
-	return imgui.CurrentIO()
+func (c *context) IO() cimgui.ImGuiIO {
+	return cimgui.GetIO()
 }
 
 func (c *context) invalidAllState() {

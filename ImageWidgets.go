@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/AllenDang/imgui-go"
+	"github.com/AllenDang/cimgui-go"
 )
 
 var _ Widget = &ImageWidget{}
@@ -16,12 +16,12 @@ var _ Widget = &ImageWidget{}
 // ImageWidget adds an image.
 // NOTE: ImageWidget is going to be deprecated. ImageWithRGBAWidget
 // should be used instead, however, because it is a native
-// imgui's solution it is still there.
+// cimgui's solution it is still there.
 type ImageWidget struct {
 	texture                *Texture
 	width                  float32
 	height                 float32
-	uv0, uv1               imgui.Vec2
+	uv0, uv1               cimgui.ImVec2
 	tintColor, borderColor color.Color
 	onClick                func()
 }
@@ -32,8 +32,8 @@ func Image(texture *Texture) *ImageWidget {
 		texture:     texture,
 		width:       100,
 		height:      100,
-		uv0:         imgui.Vec2{X: 0, Y: 0},
-		uv1:         imgui.Vec2{X: 1, Y: 1},
+		uv0:         cimgui.ImVec2{X: 0, Y: 0},
+		uv1:         cimgui.ImVec2{X: 1, Y: 1},
 		tintColor:   color.RGBA{255, 255, 255, 255},
 		borderColor: color.RGBA{0, 0, 0, 0},
 	}
@@ -74,8 +74,9 @@ func (i *ImageWidget) Size(width, height float32) *ImageWidget {
 
 // Build implements Widget interface.
 func (i *ImageWidget) Build() {
-	size := imgui.Vec2{X: i.width, Y: i.height}
-	rect := imgui.ContentRegionAvail()
+	size := cimgui.ImVec2{X: i.width, Y: i.height}
+	rect := cimgui.ImVec2{}
+	cimgui.GetContentRegionAvail(&rect)
 
 	if size.X == -1 {
 		size.X = rect.X
@@ -102,7 +103,7 @@ func (i *ImageWidget) Build() {
 		}
 	}
 
-	imgui.ImageV(i.texture.id, size, i.uv0, i.uv1, ToVec4Color(i.tintColor), ToVec4Color(i.borderColor))
+	cimgui.ImageV(i.texture.id, size, i.uv0, i.uv1, ToVec4Color(i.tintColor), ToVec4Color(i.borderColor))
 }
 
 type imageState struct {
@@ -125,7 +126,7 @@ var _ Widget = &ImageWithRgbaWidget{}
 
 // ImageWithRgbaWidget wraps ImageWidget.
 // It is more useful because it doesn't make you to care about
-// imgui textures. You can just pass golang-native image.Image and
+// cimgui textures. You can just pass golang-native image.Image and
 // display it in giu.
 type ImageWithRgbaWidget struct {
 	id   string
