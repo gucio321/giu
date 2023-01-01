@@ -2,11 +2,11 @@
 git add migration.*
 git commit --amend
 git stash
-files=`find . -iname \*go`
+files=$(find . -iname \*go)
 
 # switch to cimgui-go
 sed -i -e 's/imgui/cimgui/g' $files
-go get github.com/AllenDang/cimgui-go@5d9a1f0b1f727e23d05bc0ecb1f381d548b21c34
+go get github.com/AllenDang/cimgui-go@584fdd8e2a0b23ba815071183d03f3e755990e4f
 go mod tidy
 
 # Types and constants:
@@ -25,9 +25,7 @@ sed -i -e 's/\(type DrawFlags.*\)int/\1 cimgui\.DrawFlags/g' $files
 sed -i -e 's/\(DrawFlags\)\(\w\+\).*=.*/\1\2 DrawFlags = DrawFlags(cimgui\.DrawFlags_\2)/g' $files
 sed -i -e 's/int(\(roundingCorners\))/cimgui\.DrawFlags(\1)/g' Canvas.go
 sed -i -e 's/\(closed\),/cimgui\.DrawFlags(flags),/g' Canvas.go
-# TODO: 
-sed -i -e 's/\(cimgui\.DrawFlags_RoundCornersDefault\)/\1_/g' Canvas.go
-sed -i -e 's/\(cimgui\.DrawFlags_RoundCornersMask\)/\1_/g' Canvas.go
+# TODO:
 sed -i -e 's/		DrawFlagsRoundCornersBottomLeft | DrawFlagsRoundCornersBottomRight//g' Canvas.go
 
 sed -i -e 's/\(type Direction\) uint8/\1 cimgui.Dir/g' $files
@@ -59,7 +57,6 @@ sed -i -e 's/\(type TableRowFlags \)int/\1cimgui.TableRowFlags/g' $files
 sed -i -e 's/\(type TableColumnFlags \)int/\1cimgui.TableColumnFlags/g' $files
 sed -i -e 's/\(type SliderFlags \)int/\1cimgui.SliderFlags/g' $files
 sed -i -e 's/\(SliderFlags\)\(\w\+\).*/\1\2 SliderFlags = cimgui.SliderFlags_\2/g' Flags.go
-sed -i -e 's/\(cimgui\.SliderFlags_InvalidMask\)/\1_/g' $files
 sed -i -e 's/\(type PlotFlags \)int/\1cimgui.PlotFlags/g' $files
 sed -i -e 's/\(type PlotAxisFlags \)int/\1cimgui.ImPlotAxisFlags/g' $files
 #sed -i -e 's/\(type \)\(.*Flags\) int/\1 \2 cimgui.ImGui\2/g' $files
@@ -99,8 +96,6 @@ sed -i -e 's/^.*cimgui\.TabItemFlags_NoPushID.*//g' $files
 # Tab Bar Flags
 sed -i -e 's/cimgui\.TabBarFlags/cimgui\.TabBarFlags/g' $files
 sed -i -e 's/\(cimgui\.TabBarFlags\)\(\w\+\)/\1_\2/g' $files
-sed -i -e 's/\(cimgui\.TabBarFlags_FittingPolicyDefault\)/\1_/g' $files
-sed -i -e 's/\(cimgui\.TabBarFlags_FittingPolicyMask\)/\1_/g' $files
 
 # Tree Node Flags
 sed -i -e 's/cimgui\.TreeNodeFlags/cimgui\.TreeNodeFlags/g' $files
