@@ -32,13 +32,13 @@ func MemoryEditor() *MemoryEditorWidget {
 	}
 }
 
-// Contents sets editor's conents.
+// Contents sets editor's contents.
 func (me *MemoryEditorWidget) Contents(contents []byte) *MemoryEditorWidget {
 	me.contents = contents
 	return me
 }
 
-// Build implements widget inetrface.
+// Build implements widget interface.
 func (me *MemoryEditorWidget) Build() {
 	me.getState().editor.DrawContents(me.contents)
 }
@@ -49,7 +49,7 @@ func (me *MemoryEditorWidget) getState() (state *memoryEditorState) {
 			editor: imgui.NewMemoryEditor(),
 		}
 
-		SetState(&Context, me.id, state)
+		SetState(Context, me.id, state)
 	}
 
 	return state

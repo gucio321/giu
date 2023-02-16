@@ -68,6 +68,7 @@ func (i *ImageWidget) Size(width, height float32) *ImageWidget {
 	// Size image with DPI scaling
 	factor := Context.GetPlatform().GetContentScale()
 	i.width, i.height = width*factor, height*factor
+
 	return i
 }
 
@@ -75,9 +76,11 @@ func (i *ImageWidget) Size(width, height float32) *ImageWidget {
 func (i *ImageWidget) Build() {
 	size := imgui.Vec2{X: i.width, Y: i.height}
 	rect := imgui.ContentRegionAvail()
+
 	if size.X == -1 {
 		size.X = rect.X
 	}
+
 	if size.Y == -1 {
 		size.Y = rect.Y
 	}
@@ -92,6 +95,7 @@ func (i *ImageWidget) Build() {
 		cursorPos := GetCursorScreenPos()
 		mousePos := GetMousePos()
 		mousePos.Add(cursorPos)
+
 		if cursorPos.X <= mousePos.X && cursorPos.Y <= mousePos.Y &&
 			cursorPos.X+int(i.width) >= mousePos.X && cursorPos.Y+int(i.height) >= mousePos.Y {
 			i.onClick()
@@ -111,7 +115,7 @@ type imageState struct {
 // Dispose cleans imageState (implements Disposable interface).
 func (is *imageState) Dispose() {
 	is.texture = nil
-	// Cancel ongoing image downloaidng
+	// Cancel ongoing image downloading
 	if is.loading && is.cancel != nil {
 		is.cancel()
 	}
@@ -119,7 +123,7 @@ func (is *imageState) Dispose() {
 
 var _ Widget = &ImageWithRgbaWidget{}
 
-// ImageWithRgbaWidget wrapps ImageWidget.
+// ImageWithRgbaWidget wraps ImageWidget.
 // It is more useful because it doesn't make you to care about
 // imgui textures. You can just pass golang-native image.Image and
 // display it in giu.
@@ -162,7 +166,7 @@ func (i *ImageWithRgbaWidget) Build() {
 		var imgState *imageState
 		if imgState = GetState[imageState](Context, i.id); imgState == nil {
 			imgState = &imageState{}
-			SetState(&Context, i.id, imgState)
+			SetState(Context, i.id, imgState)
 
 			NewTextureFromRgba(i.rgba, func(tex *Texture) {
 				imgState.texture = tex
@@ -221,7 +225,7 @@ func (i *ImageWithFileWidget) Build() {
 	if imgState = GetState[imageState](Context, i.id); imgState == nil {
 		// Prevent multiple invocation to LoadImage.
 		imgState = &imageState{}
-		SetState(&Context, i.id, imgState)
+		SetState(Context, i.id, imgState)
 
 		img, err := LoadImage(i.imgPath)
 		if err == nil {
@@ -309,14 +313,15 @@ func (i *ImageWithURLWidget) Build() {
 	var imgState *imageState
 	if imgState = GetState[imageState](Context, i.id); imgState == nil {
 		imgState = &imageState{}
-		SetState(&Context, i.id, imgState)
+		SetState(Context, i.id, imgState)
 
 		// Prevent multiple invocation to download image.
-		downloadContext, cancalFunc := ctx.WithCancel(ctx.Background())
-		SetState(&Context, i.id, &imageState{loading: true, cancel: cancalFunc})
+		downloadContext, cancelFunc := ctx.WithCancel(ctx.Background())
+
+		SetState(Context, i.id, &imageState{loading: true, cancel: cancelFunc})
 
 		errorFn := func(err error) {
-			SetState(&Context, i.id, &imageState{failure: true})
+			SetState(Context, i.id, &imageState{failure: true})
 
 			// Trigger onFailure event
 			if i.onFailure != nil {
@@ -328,6 +333,7 @@ func (i *ImageWithURLWidget) Build() {
 			// Load image from url
 			client := &http.Client{Timeout: i.downloadTimeout}
 			req, err := http.NewRequestWithContext(downloadContext, "GET", i.imgURL, http.NoBody)
+
 			if err != nil {
 				errorFn(err)
 				return
@@ -354,7 +360,7 @@ func (i *ImageWithURLWidget) Build() {
 			rgba := ImageToRgba(img)
 
 			NewTextureFromRgba(rgba, func(tex *Texture) {
-				SetState(&Context, i.id, &imageState{
+				SetState(Context, i.id, &imageState{
 					loading: false,
 					failure: false,
 					texture: tex,

@@ -9,7 +9,7 @@ import (
 )
 
 // Context represents a giu context.
-var Context context
+var Context *context
 
 // Disposable should be implemented by all states stored in context.
 // Dispose method is called when state is removed from context.
@@ -44,14 +44,14 @@ type context struct {
 	state sync.Map
 
 	InputHandler InputHandler
-	FontAtlas    FontAtlas
+	FontAtlas    *FontAtlas
 
 	textureLoadingQueue *queue.Queue
 
 	cssStylesheet cssStylesheet
 }
 
-func CreateContext(p imgui.Platform, r imgui.Renderer) context {
+func CreateContext(p imgui.Platform, r imgui.Renderer) *context {
 	result := context{
 		platform:      p,
 		renderer:      r,
@@ -68,10 +68,9 @@ func CreateContext(p imgui.Platform, r imgui.Renderer) context {
 		r.SetFontTexture(fontAtlas)
 	} else {
 		result.FontAtlas.shouldRebuildFontAtlas = true
-		// result.FontAtlas.rebuildFontAtlas()
 	}
 
-	return result
+	return &result
 }
 
 func (c *context) GetRenderer() imgui.Renderer {
@@ -118,14 +117,15 @@ func (c *context) SetState(id string, data Disposable) {
 	c.state.Store(id, &state{valid: true, data: data})
 }
 
-func GetState[T any, PT genericDisposable[T]](c context, id string) PT {
+func GetState[T any, PT genericDisposable[T]](c *context, id string) PT {
 	if s, ok := c.load(id); ok {
 		s.valid = true
 		data, isOk := s.data.(PT)
 		Assert(isOk, "Context", "GetState", fmt.Sprintf("got state of unexpected type: expected %T, instead found %T", new(T), s.data))
-		return data
 
+		return data
 	}
+
 	return nil
 }
 
@@ -134,6 +134,7 @@ func (c *context) GetState(id string) any {
 		s.valid = true
 		return s.data
 	}
+
 	return nil
 }
 
@@ -143,6 +144,7 @@ func (c *context) load(id any) (*state, bool) {
 			return s, true
 		}
 	}
+
 	return nil, false
 }
 
@@ -150,5 +152,6 @@ func (c *context) load(id any) (*state, bool) {
 func (c *context) GetWidgetIndex() int {
 	i := c.widgetIndexCounter
 	c.widgetIndexCounter++
+
 	return i
 }

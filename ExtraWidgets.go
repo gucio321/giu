@@ -50,7 +50,8 @@ func (h *HSplitterWidget) ID(id string) *HSplitterWidget {
 }
 
 // Build implements Widget interface
-// nolint:dupl // will fix later
+//
+//nolint:dupl // will fix later
 func (h *HSplitterWidget) Build() {
 	// Calc line position.
 	width := 40
@@ -69,11 +70,13 @@ func (h *HSplitterWidget) Build() {
 
 	// Place a invisible button to capture event.
 	imgui.InvisibleButton(h.id, imgui.Vec2{X: h.width, Y: h.height})
+
 	if imgui.IsItemActive() {
 		*(h.delta) = imgui.CurrentIO().GetMouseDelta().Y
 	} else {
 		*(h.delta) = 0
 	}
+
 	if imgui.IsItemHovered() {
 		imgui.SetMouseCursor(imgui.MouseCursorResizeNS)
 		c = Vec4ToRGBA(style.GetColor(imgui.StyleColorScrollbarGrabActive))
@@ -126,7 +129,8 @@ func (v *VSplitterWidget) ID(id string) *VSplitterWidget {
 }
 
 // Build implements Widget interface
-// nolint:dupl // will fix later
+//
+//nolint:dupl // will fix later
 func (v *VSplitterWidget) Build() {
 	// Calc line position.
 	width := 2
@@ -145,6 +149,7 @@ func (v *VSplitterWidget) Build() {
 
 	// Place a invisible button to capture event.
 	imgui.InvisibleButton(v.id, imgui.Vec2{X: v.width, Y: v.height})
+
 	if imgui.IsItemActive() {
 		*(v.delta) = imgui.CurrentIO().GetMouseDelta().X
 	} else {
@@ -244,6 +249,7 @@ func TreeTable() *TreeTableWidget {
 func (tt *TreeTableWidget) Freeze(col, row int) *TreeTableWidget {
 	tt.freezeColumn = col
 	tt.freezeRow = row
+
 	return tt
 }
 
@@ -287,6 +293,7 @@ func (tt *TreeTableWidget) Build() {
 			for _, col := range tt.columns {
 				col.BuildTableColumn()
 			}
+
 			imgui.TableHeadersRow()
 		}
 
@@ -304,6 +311,13 @@ type CustomWidget struct {
 	builder func()
 }
 
+// Custom creates a new custom widget.
+func Custom(builder func()) *CustomWidget {
+	return &CustomWidget{
+		builder: builder,
+	}
+}
+
 // Build implements Widget interface.
 func (c *CustomWidget) Build() {
 	if c.builder != nil {
@@ -311,10 +325,9 @@ func (c *CustomWidget) Build() {
 	}
 }
 
-func Custom(builder func()) *CustomWidget {
-	return &CustomWidget{
-		builder: builder,
-	}
+// Plot implements Plot interface.
+func (c *CustomWidget) Plot() {
+	c.Build()
 }
 
 var _ Widget = &ConditionWidget{}
@@ -445,12 +458,13 @@ func (l *ListBoxWidget) OnMenu(onMenu func(selectedIndex int, menu string)) *Lis
 }
 
 // Build implements Widget interface
-// nolint:gocognit // will fix later
+//
+//nolint:gocognit // will fix later
 func (l *ListBoxWidget) Build() {
 	var state *ListBoxState
 	if state = GetState[ListBoxState](Context, l.id); state == nil {
 		state = &ListBoxState{selectedIndex: 0}
-		SetState(&Context, l.id, state)
+		SetState(Context, l.id, state)
 	}
 
 	child := Child().Border(l.border).Size(l.width, l.height).Layout(Layout{
@@ -532,6 +546,7 @@ func (d *DatePickerWidget) OnChange(onChange func()) *DatePickerWidget {
 	if onChange != nil {
 		d.onChange = onChange
 	}
+
 	return d
 }
 
@@ -549,6 +564,7 @@ func (d *DatePickerWidget) getFormat() string {
 	if d.format == "" {
 		return "2006-01-02" // default
 	}
+
 	return d.format
 }
 
@@ -556,6 +572,7 @@ func (d *DatePickerWidget) offsetDay(offset int) time.Weekday {
 	day := (int(d.startOfWeek) + offset) % 7
 	// offset may be negative, thus day can be negative
 	day = (day + 7) % 7
+
 	return time.Weekday(day)
 }
 
@@ -570,6 +587,7 @@ func (d *DatePickerWidget) Build() {
 
 	if d.width > 0 {
 		PushItemWidth(d.width)
+
 		defer PopItemWidth()
 	}
 
@@ -652,6 +670,7 @@ func (d *DatePickerWidget) getDaysGroups() (days [][]int) {
 
 	monthDay := 1
 	emptyDaysInFirstWeek := (int(firstDay.Weekday()) - int(d.startOfWeek) + 7) % 7
+
 	for i := emptyDaysInFirstWeek; i < 7; i++ {
 		days[0][i] = monthDay
 		monthDay++
@@ -680,6 +699,7 @@ func (d *DatePickerWidget) getDaysGroups() (days [][]int) {
 func (d *DatePickerWidget) calendarField(day int) Widget {
 	today := time.Now()
 	highlightColor := imgui.CurrentStyle().GetColor(imgui.StyleColorPlotHistogram)
+
 	return Custom(func() {
 		isToday := d.date.Year() == today.Year() && d.date.Month() == today.Month() && day == today.Day()
 		if isToday {

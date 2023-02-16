@@ -26,23 +26,25 @@ func (s *StackWidget) Build() {
 	visiblePos := GetCursorScreenPos()
 
 	// build visible layout
-	// NOTE: it is important to build the visiblely showed layout before
-	// building another ones, because the interactive layout widgets
+	// NOTE: it is important to build the visible layout before
+	// building other ones, because the interactive layout widgets
 	// (e.g. buttons) should be rendered on top of `stack`
 	layouts := s.layouts
 
 	if s.visible >= 0 && s.visible < int32(len(s.layouts)) {
 		s.layouts[s.visible].Build()
 		// remove visible layout from layouts list
-		// nolint:gocritic // remove visible widget
+		//nolint:gocritic // remove visible widget
 		layouts = append(s.layouts[:s.visible], s.layouts[:s.visible+1]...)
 	}
 
 	// build invisible layouts with 0 alpha
 	imgui.PushStyleVarFloat(imgui.StyleVarAlpha, 0)
+
 	for _, l := range layouts {
 		SetCursorScreenPos(visiblePos)
 		l.Build()
 	}
+
 	imgui.PopStyleVar()
 }

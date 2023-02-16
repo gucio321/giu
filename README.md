@@ -1,6 +1,5 @@
 # giu
 
-[![codecov](https://codecov.io/gh/AllenDang/giu/branch/master/graph/badge.svg)](https://codecov.io/gh/AllenDang/giu)
 [![Join the chat at https://gitter.im/AllenDang-giu/community](https://badges.gitter.im/AllenDang-giu/community.svg)](https://gitter.im/AllenDang-giu/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Go Report Card](https://goreportcard.com/badge/github.com/AllenDang/giu)](https://goreportcard.com/report/github.com/AllenDang/giu)
 ![Build Status](https://github.com/AllenDang/giu/actions/workflows/build.yml/badge.svg)
@@ -11,6 +10,7 @@ A rapid cross-platform GUI framework for Go based on [Dear ImGui](https://github
 Any contribution (features, widgets, tutorials, documents, etc...) is appreciated!
 
 ## Sponsor
+
 (This library is available under a free and permissive license, but needs financial support to sustain its continued improvements. In addition to maintenance and stability there are many desirable features yet to be added. If you are using giu, please consider reaching out.)
 
 Businesses: support continued development and maintenance via invoiced technical support, maintenance, sponsoring contracts:
@@ -148,11 +148,12 @@ sudo apt install libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-d
 ```
 
 on Red Hat based distributions:
+
 ```bash
 sudo dnf install libX11-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libGL-devel libXxf86vm-devel
 ```
 
-you may also need to install C/C++ compiller (like g++) if it isn't already installed. Follow go compilator prompts.
+you may also need to install C/C++ compiler (like g++) if it isn't already installed. Follow go compiler prompts.
 
 Then, a simple `go build` will work.
 
@@ -185,6 +186,7 @@ go build -ldflags "-s -w -H=windowsgui -extldflags=-static" .
 1. Install mingw-64.
 
 on Mac:
+
 ```sh
 brew install mingw-w64
 ```

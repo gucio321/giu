@@ -70,7 +70,7 @@ func (i *InputTextMultilineWidget) Size(width, height float32) *InputTextMultili
 	return i
 }
 
-// Enable/Disable auto scroll to bottoim.
+// AutoScrollToBottom Enables/Disables auto scroll to bottom.
 func (i *InputTextMultilineWidget) AutoScrollToBottom(b bool) *InputTextMultilineWidget {
 	i.scrollToBottom = b
 	return i
@@ -151,7 +151,7 @@ func (s *inputTextState) Dispose() {
 
 var _ Widget = &InputTextWidget{}
 
-// InputTextWidget is a single-line text iinput.
+// InputTextWidget is a single-line text input.
 type InputTextWidget struct {
 	label      string
 	hint       string
@@ -230,11 +230,12 @@ func (i *InputTextWidget) Build() {
 	var state *inputTextState
 	if state = GetState[inputTextState](Context, i.label); state == nil {
 		state = &inputTextState{}
-		SetState(&Context, i.label, state)
+		SetState(Context, i.label, state)
 	}
 
 	if i.width != 0 {
 		PushItemWidth(i.width)
+
 		defer PopItemWidth()
 	}
 
@@ -279,7 +280,7 @@ func (i *InputTextWidget) Build() {
 
 var _ Widget = &InputIntWidget{}
 
-// InputIntWidget is an input text field acceptiong intager values only.
+// InputIntWidget is an input text field accepting integer values only.
 type InputIntWidget struct {
 	label    string
 	value    *int32
@@ -349,6 +350,7 @@ func (i *InputIntWidget) OnChange(onChange func()) *InputIntWidget {
 func (i *InputIntWidget) Build() {
 	if i.width != 0 {
 		PushItemWidth(i.width)
+
 		defer PopItemWidth()
 	}
 
@@ -434,6 +436,7 @@ func (i *InputFloatWidget) StepSizeFast(stepFast float32) *InputFloatWidget {
 func (i *InputFloatWidget) Build() {
 	if i.width != 0 {
 		PushItemWidth(i.width)
+
 		defer PopItemWidth()
 	}
 
@@ -464,7 +467,7 @@ func Labelf(format string, args ...any) *LabelWidget {
 	return Label(fmt.Sprintf(format, args...))
 }
 
-// Wrapped determinates if label is frapped.
+// Wrapped determines if label is wrapped.
 func (l *LabelWidget) Wrapped(wrapped bool) *LabelWidget {
 	l.wrapped = wrapped
 	return l
@@ -480,6 +483,7 @@ func (l *LabelWidget) Font(font *FontInfo) *LabelWidget {
 func (l *LabelWidget) Build() {
 	if l.wrapped {
 		PushTextWrapPos()
+
 		defer PopTextWrapPos()
 	}
 

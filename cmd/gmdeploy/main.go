@@ -12,7 +12,7 @@ import (
 
 func main() {
 	flag.Usage = func() {
-		fmt.Println("Usage: gmdeploy [os] [icon] [path/to/progject]")
+		fmt.Println("Usage: gmdeploy [os] [icon] [path/to/project]")
 		fmt.Println("Flags:")
 		flag.PrintDefaults()
 
@@ -20,15 +20,19 @@ func main() {
 	}
 
 	var targetOS string
+
 	flag.StringVar(&targetOS, "os", runtime.GOOS, "target deploy os [windows, darwin, linux]")
 
 	var iconPath string
-	flag.StringVar(&iconPath, "icon", "", "applicatio icon file path")
+
+	flag.StringVar(&iconPath, "icon", "", "application icon file path")
 
 	var upx bool
+
 	flag.BoolVar(&upx, "upx", false, "use upx to compress executable")
 
 	var createUniversalBinaryForMacOS bool
+
 	flag.BoolVar(&createUniversalBinaryForMacOS, "ub", false, "create universal binary for macOS")
 
 	flag.Parse()
@@ -51,22 +55,25 @@ func main() {
 	switch targetOS {
 	case "darwin":
 		const iconExtension = ".icns"
-		// nolint:gosec // Compile: cannot fix
+		//nolint:gosec // Compile: cannot fix
 		cmd := exec.Command("bash", "-c", fmt.Sprintf("go build -ldflags='-s -w' -o %s", appName))
 		cmd.Dir = projectPath
 		runCmd(cmd)
 
 		// Create universal binary for macOS
 		// Build for arm64
+		//nolint:gosec // cannot fix
 		cmd = exec.Command("bash", "-c", fmt.Sprintf("CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o %s_binary_arm64 -ldflags '-s -w' .", appName))
 		cmd.Dir = projectPath
 		runCmd(cmd)
 
 		// Build for amd64
+		//nolint:gosec // cannot fix
 		cmd = exec.Command("bash", "-c", fmt.Sprintf("CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o %s_binary_amd64 -ldflags '-s -w' .", appName))
 		runCmd(cmd)
 
 		// Merge them together with lipo
+		//nolint:gosec // cannot fix
 		cmd = exec.Command("bash", "-c", fmt.Sprintf("lipo -create -output %[1]s %[1]s_binary_amd64 %[1]s_binary_arm64", appName))
 		runCmd(cmd)
 
@@ -76,7 +83,7 @@ func main() {
 
 		// Upx
 		if upx {
-			// nolint:gosec // cannot fix
+			//nolint:gosec // cannot fix
 			cmd = exec.Command("upx", appName)
 			runCmd(cmd)
 		}
@@ -86,7 +93,7 @@ func main() {
 		mkdirAll(macOSPath)
 
 		// Copy compiled executable to build folder
-		// nolint:gosec // cannot fix
+		//nolint:gosec // cannot fix
 		cmd = exec.Command("mv", appName, macOSPath)
 		runCmd(cmd)
 
@@ -103,14 +110,14 @@ func main() {
 			mkdirAll(resourcesPath)
 
 			// Rename icon file name to [appName].icns
-			// nolint:gosec // cannot fix
+			//nolint:gosec // cannot fix
 			cmd = exec.Command("cp", iconPath, filepath.Join(resourcesPath, fmt.Sprintf("%s%s", appName, iconExtension)))
 			runCmd(cmd)
 		}
 
 		fmt.Printf("%s.app is generated at %s/build/%s/\n", appName, projectPath, targetOS)
 	case "linux":
-		// nolint:gosec // Compile: cannot fix
+		//nolint:gosec // Compile: cannot fix
 		cmd := exec.Command("bash", "-c", fmt.Sprintf("go build -ldflags='-s -w' -o %s", appName))
 		cmd.Dir = projectPath
 		runCmd(cmd)
@@ -121,7 +128,7 @@ func main() {
 		mkdirAll(binPath)
 
 		// Copy compiled executable to build folder
-		// nolint:gosec // rename command - cannot be fixed
+		//nolint:gosec // rename command - cannot be fixed
 		cmd = exec.Command("mv", appName, binPath)
 		runCmd(cmd)
 
@@ -140,7 +147,7 @@ func main() {
 
 			// Rename icon file name to [appName].icns
 			newIconName := filepath.Join(iconsPath, fmt.Sprintf("%s.icns", appName))
-			// nolint:gosec // cp comman - cannot fix
+			//nolint:gosec // cp command - cannot fix
 			cmd = exec.Command("cp", iconPath, newIconName)
 			runCmd(cmd)
 		}

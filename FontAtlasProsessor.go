@@ -54,7 +54,7 @@ type FontAtlas struct {
 	fontSize               float32
 }
 
-func newFontAtlas() FontAtlas {
+func newFontAtlas() *FontAtlas {
 	result := FontAtlas{
 		extraFontMap: make(map[string]*imgui.Font),
 		fontSize:     defaultFontSize,
@@ -112,7 +112,7 @@ func newFontAtlas() FontAtlas {
 		})
 	}
 
-	return result
+	return &result
 }
 
 // SetDefaultFontSize sets the default font size. Invoke this before MasterWindow.NewMasterWindow(..).
@@ -191,6 +191,7 @@ func (a *FontAtlas) registerDefaultFont(fontName string, size float32) {
 
 func (a *FontAtlas) registerDefaultFonts(fontInfos []FontInfo) {
 	var firstFoundFont *FontInfo
+
 	for _, fi := range fontInfos {
 		fontPath, err := findfont.Find(fi.fontName)
 		if err == nil {
@@ -224,7 +225,7 @@ func (a *FontAtlas) RegisterStringPointer(str *string) *string {
 	return str
 }
 
-// RegisterStringSlice calls RegisterString for each slice element
+// RegisterStringSlice calls RegisterString for each slice element.
 func (a *FontAtlas) RegisterStringSlice(str []string) []string {
 	for _, s := range str {
 		a.RegisterString(s)
@@ -256,7 +257,7 @@ func (a *FontAtlas) rebuildFontAtlas() {
 	ranges := imgui.NewGlyphRanges()
 	builder := imgui.NewFontGlyphRangesBuilder()
 
-	// Because we pre-regestered numbers, so default string map's length should greater then 11.
+	// Because we pre-registered numbers, so default string map's length should greater then 11.
 	if sb.Len() > len(preRegisterString) {
 		builder.AddText(sb.String())
 	} else {

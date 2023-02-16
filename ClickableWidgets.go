@@ -30,7 +30,7 @@ func Button(label string) *ButtonWidget {
 	}
 }
 
-// Buttonf creates button with formated label
+// Buttonf creates button with formatted label
 // NOTE: works like fmt.Sprintf (see `go doc fmt`).
 func Buttonf(format string, args ...any) *ButtonWidget {
 	return Button(fmt.Sprintf(format, args...))
@@ -121,7 +121,7 @@ func SmallButton(id string) *SmallButtonWidget {
 	}
 }
 
-// SmallButtonf allows to set formated label for small button.
+// SmallButtonf allows to set formatted label for small button.
 // It calls SmallButton(fmt.Sprintf(label, args...)).
 func SmallButtonf(format string, args ...any) *SmallButtonWidget {
 	return SmallButton(fmt.Sprintf(format, args...))
@@ -202,7 +202,7 @@ type ImageButtonWidget struct {
 	onClick      func()
 }
 
-// ImageButton  constructs image buton widget.
+// ImageButton  constructs image button widget.
 func ImageButton(texture *Texture) *ImageButtonWidget {
 	return &ImageButtonWidget{
 		texture:      texture,
@@ -330,10 +330,10 @@ func (b *ImageButtonWithRgbaWidget) FramePadding(padding int) *ImageButtonWithRg
 // Build implements Widget interface.
 func (b *ImageButtonWithRgbaWidget) Build() {
 	if state := GetState[imageState](Context, b.id); state == nil {
-		SetState(&Context, b.id, &imageState{})
+		SetState(Context, b.id, &imageState{})
 
 		NewTextureFromRgba(b.rgba, func(tex *Texture) {
-			SetState(&Context, b.id, &imageState{texture: tex})
+			SetState(Context, b.id, &imageState{texture: tex})
 		})
 	} else {
 		b.ImageButtonWidget.texture = state.texture
@@ -384,7 +384,7 @@ type RadioButtonWidget struct {
 	onChange func()
 }
 
-// RadioButton creates a radio buton.
+// RadioButton creates a radio button.
 func RadioButton(text string, active bool) *RadioButtonWidget {
 	return &RadioButtonWidget{
 		text:     GenAutoID(text),
@@ -432,7 +432,7 @@ func Selectable(label string) *SelectableWidget {
 	}
 }
 
-// Selectablef creates a selectable widget with formated label.
+// Selectablef creates a selectable widget with formatted label.
 func Selectablef(format string, args ...any) *SelectableWidget {
 	return Selectable(fmt.Sprintf(format, args...))
 }
@@ -542,6 +542,7 @@ func (t *TreeNodeWidget) Build() {
 
 	if open {
 		t.layout.Build()
+
 		if (t.flags & imgui.TreeNodeFlagsNoTreePushOnOpen) == 0 {
 			imgui.TreePop()
 		}

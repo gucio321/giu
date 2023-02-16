@@ -7,11 +7,12 @@ import (
 )
 
 // SingleWindow creates one window filling all available space
-// in MasterWindow. If SingleWindow is set up, no other windows can't be
-// definied.
+// in MasterWindow. If SingleWindow is set up, no other windows may be
+// defined.
 func SingleWindow() *WindowWidget {
 	size := Context.platform.DisplaySize()
 	title := fmt.Sprintf("SingleWindow_%d", Context.GetWidgetIndex())
+
 	return Window(title).
 		Flags(
 			imgui.WindowFlagsNoTitleBar|
@@ -26,6 +27,7 @@ func SingleWindow() *WindowWidget {
 func SingleWindowWithMenuBar() *WindowWidget {
 	size := Context.platform.DisplaySize()
 	title := fmt.Sprintf("SingleWindow_%d", Context.GetWidgetIndex())
+
 	return Window(title).
 		Flags(
 			imgui.WindowFlagsNoTitleBar|
@@ -69,7 +71,7 @@ func Window(title string) *WindowWidget {
 	}
 }
 
-// IsOpen sets if window widget is `opened` (minimalized).
+// IsOpen sets if window widget is `opened` (minimized).
 func (w *WindowWidget) IsOpen(open *bool) *WindowWidget {
 	w.open = open
 	return w
@@ -91,7 +93,7 @@ func (w *WindowWidget) Size(width, height float32) *WindowWidget {
 
 // Pos sets the window start position
 // NOTE: The position could be changed by user later.
-// To prevent user from changin window position use
+// To prevent user from changing window position use
 // WIndowFlagsNoMove.
 func (w *WindowWidget) Pos(x, y float32) *WindowWidget {
 	w.x, w.y = x, y
@@ -117,6 +119,7 @@ func (w *WindowWidget) Layout(widgets ...Widget) {
 
 	if w.bringToFront {
 		imgui.SetNextWindowFocus()
+
 		w.bringToFront = false
 	}
 
@@ -190,7 +193,8 @@ func (w *WindowWidget) getStateID() string {
 func (w *WindowWidget) getState() (state *windowState) {
 	if state = GetState[windowState](Context, w.getStateID()); state == nil {
 		state = &windowState{}
-		SetState(&Context, w.getStateID(), state)
+		SetState(Context, w.getStateID(), state)
 	}
+
 	return state
 }

@@ -3,7 +3,7 @@ package giu
 import "fmt"
 
 // DialogResult represents dialog result
-// dialog resullt is bool. if OK/Yes it is true, else (Cancel/No) - false.
+// dialog result is bool. if OK/Yes it is true, else (Cancel/No) - false.
 type DialogResult bool
 
 // dialog results.
@@ -48,6 +48,7 @@ func (ms *msgboxState) Dispose() {
 
 func msgboxInvokeCallback(result DialogResult, callback DialogResultCallback) {
 	CloseCurrentPopup()
+
 	if callback != nil {
 		callback(result)
 	}
@@ -105,7 +106,7 @@ func PrepareMsgbox() Layout {
 			// Register state.
 			if state = GetState[msgboxState](Context, msgboxID); state == nil {
 				state = &msgboxState{title: "Info", content: "Content", buttons: MsgboxButtonsOk, resultCallback: nil, open: false}
-				SetState(&Context, msgboxID, state)
+				SetState(Context, msgboxID, state)
 			}
 
 			if state.open {
@@ -159,6 +160,7 @@ func Msgbox(title, content string) *MsgboxWidget {
 func (m *MsgboxWidget) Buttons(buttons MsgboxButtons) *MsgboxWidget {
 	s := m.getState()
 	s.buttons = buttons
+
 	return m
 }
 
@@ -166,5 +168,6 @@ func (m *MsgboxWidget) Buttons(buttons MsgboxButtons) *MsgboxWidget {
 func (m *MsgboxWidget) ResultCallback(cb DialogResultCallback) *MsgboxWidget {
 	s := m.getState()
 	s.resultCallback = cb
+
 	return m
 }

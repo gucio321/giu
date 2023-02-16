@@ -12,7 +12,7 @@ import (
 	"gopkg.in/eapache/queue.v1"
 )
 
-// MasterWindowFlags wrapps imgui.GLFWWindowFlags.
+// MasterWindowFlags wraps imgui.GLFWWindowFlags.
 type MasterWindowFlags imgui.GLFWWindowFlags
 
 // master window flags.
@@ -61,6 +61,7 @@ func NewMasterWindow(title string, width, height int, flags MasterWindowFlags) *
 	io := imgui.CurrentIO()
 
 	io.SetConfigFlags(imgui.ConfigFlagEnablePowerSavingMode | imgui.BackendFlagsRendererHasVtxOffset)
+	io.SetBackendFlags(imgui.BackendFlagsRendererHasVtxOffset)
 
 	// Disable imgui.ini
 	io.SetIniFilename("")
@@ -218,6 +219,7 @@ func (w *MasterWindow) run() {
 
 	ticker := time.NewTicker(time.Second / time.Duration(p.GetTPS()))
 	shouldQuit := false
+
 	for !shouldQuit {
 		mainthread.Call(func() {
 			// process texture load requests
@@ -294,7 +296,7 @@ func (w *MasterWindow) SetCloseCallback(cb func() bool) {
 	w.platform.SetCloseCallback(cb)
 }
 
-// SetDropCallback sets callback when file was droppend into the window.
+// SetDropCallback sets callback when file was dropped into the window.
 func (w *MasterWindow) SetDropCallback(cb func([]string)) {
 	w.platform.SetDropCallback(cb)
 }
@@ -372,7 +374,7 @@ func (w *MasterWindow) SetTitle(title string) {
 	w.platform.SetTitle(title)
 }
 
-// Close will savely close the master window.
+// Close will safely close the master window.
 func (w *MasterWindow) Close() {
 	w.SetShouldClose(true)
 }
@@ -386,6 +388,7 @@ func (w *MasterWindow) SetShouldClose(v bool) {
 // see InputHandler.go.
 func (w *MasterWindow) SetInputHandler(handler InputHandler) {
 	Context.InputHandler = handler
+
 	w.platform.SetInputCallback(func(key glfw.Key, modifier glfw.ModifierKey, action glfw.Action) {
 		k, m, a := Key(key), Modifier(modifier), Action(action)
 		handler.Handle(k, m, a)

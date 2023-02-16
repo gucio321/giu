@@ -1,8 +1,15 @@
 package main
 
-import "github.com/AllenDang/giu"
+import (
+	"time"
 
-var text string
+	"github.com/AllenDang/giu"
+)
+
+var (
+	text string
+	date time.Time
+)
 
 func loop() {
 	giu.Window("window").Layout(
@@ -12,14 +19,14 @@ func loop() {
 		),
 
 		giu.Align(giu.AlignRight).To(
-			giu.Label("I'm a alined to right label"),
+			giu.Label("I'm an alined to right label"),
 			giu.InputText(&text),
 		),
 
 		giu.Align(giu.AlignRight).To(
 			giu.Label("I'm the label"),
 			giu.Layout{
-				giu.Label("I'm th e other label embeded in another layout"),
+				giu.Label("I'm the other label embedded in another layout"),
 				giu.Label("I'm the next label"),
 			},
 			giu.Label("I'm the last label"),
@@ -35,14 +42,18 @@ func loop() {
 		giu.Label("manual alignment"),
 		giu.AlignManually(
 			giu.AlignCenter,
-			giu.Button("I'm button with 100 width").
-				Size(100, 30),
-			100, false,
+			giu.Button("I'm button with 200 width").
+				Size(200, 30),
+			200, false,
 		),
 		giu.AlignManually(
 			giu.AlignCenter,
 			giu.InputText(&text),
 			100, true,
+		),
+
+		giu.Align(giu.AlignCenter).To(
+			giu.DatePicker("<- date picker centered", &date),
 		),
 	)
 }

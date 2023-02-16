@@ -7,7 +7,7 @@ import (
 var _ Widget = &ListClipperWrapper{}
 
 // ListClipperWrapper is a ImGuiListClipper implementation.
-// it can be used to diplay a large, vertical list of items and
+// it can be used to display a large, vertical list of items and
 // avoid rendering them.
 type ListClipperWrapper struct {
 	layout Layout
@@ -28,6 +28,7 @@ func (l *ListClipperWrapper) Layout(layout ...Widget) *ListClipperWrapper {
 func (l *ListClipperWrapper) Build() {
 	// read all the layout widgets and (eventually) split nested layouts
 	var layout Layout
+
 	l.layout.Range(func(w Widget) {
 		layout = append(layout, w)
 	})

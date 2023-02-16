@@ -22,7 +22,7 @@ func LoadImage(imgPath string) (*image.RGBA, error) {
 	}
 
 	defer func() {
-		// nolint:govet // we want to reuse this err variable here
+		//nolint:govet // we want to reuse this err variable here
 		if err := imgFile.Close(); err != nil {
 			panic(fmt.Sprintf("error closing image file: %s", imgPath))
 		}
@@ -44,6 +44,7 @@ func ImageToRgba(img image.Image) *image.RGBA {
 	default:
 		rgba := image.NewRGBA(trueImg.Bounds())
 		draw.Draw(rgba, trueImg.Bounds(), trueImg, image.Pt(0, 0), draw.Src)
+
 		return rgba
 	}
 }
@@ -53,6 +54,7 @@ func ToVec4Color(col color.Color) imgui.Vec4 {
 	const mask = 0xffff
 
 	r, g, b, a := col.RGBA()
+
 	return imgui.Vec4{
 		X: float32(r) / mask,
 		Y: float32(g) / mask,
