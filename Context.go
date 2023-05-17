@@ -120,17 +120,17 @@ func (c *context) cleanState() {
 	c.widgetIndexCounter = 0
 }
 
-// SetState is generic variant of Context.SetState
+// SetState is generic variant of Context.SetState.
 func SetState[T any, PT genericDisposable[T]](c *context, id string, data PT) {
 	c.state.Store(id, &state{valid: true, data: data})
 }
 
-// SetState sets state of widgt with id to data
+// SetState sets state of widgt with id to data.
 func (c *context) SetState(id string, data Disposable) {
 	c.state.Store(id, &state{valid: true, data: data})
 }
 
-// GetState is a generic variant of context.GetState
+// GetState is a generic variant of context.GetState.
 func GetState[T any, PT genericDisposable[T]](c *context, id string) PT {
 	if s, ok := c.load(id); ok {
 		c.m.Lock()

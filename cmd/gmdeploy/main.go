@@ -1,3 +1,5 @@
+// Package main - gmdeploy is a small programm dedicated to cross-compile
+// GIU application.
 package main
 
 import (

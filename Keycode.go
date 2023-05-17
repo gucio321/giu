@@ -150,7 +150,7 @@ const (
 // Action represents input action type from GLFW.
 type Action glfw.Action
 
-// Action types
+// Action types.
 const (
 	Release Action = Action(glfw.Release)
 	Press   Action = Action(glfw.Press)
