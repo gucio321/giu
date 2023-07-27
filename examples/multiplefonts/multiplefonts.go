@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	g "github.com/AllenDang/giu"
 )
 
@@ -32,12 +35,18 @@ func loop() {
 }
 
 func main() {
+	wnd := g.NewMasterWindow("Multiple fonts", 600, 400, g.MasterWindowFlagsNotResizable)
+
+	data, err := os.ReadFile("./font.ttf")
+	if err != nil {
+		panic(err)
+	}
 	// Change the default font
-	g.Context.FontAtlas.SetDefaultFont("Arial.ttf", 12)
+	g.Context.FontAtlas.SetDefaultFontFromBytes(data, 12)
 
 	// Add a new font and manually set it when needed
-	bigFont = g.Context.FontAtlas.AddFont("Menlo.ttc", 24)
+	bigFont = g.Context.FontAtlas.AddFontFromBytes("my font", data, 24)
+	fmt.Println(bigFont)
 
-	wnd := g.NewMasterWindow("Multiple fonts", 600, 400, g.MasterWindowFlagsNotResizable)
 	wnd.Run(loop)
 }
