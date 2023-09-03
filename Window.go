@@ -19,7 +19,8 @@ func SingleWindow() *WindowWidget {
 				imgui.WindowFlagsNoCollapse|
 				imgui.WindowFlagsNoScrollbar|
 				imgui.WindowFlagsNoMove|
-				imgui.WindowFlagsNoResize).
+				imgui.WindowFlagsNoResize|
+				imgui.WindowFlagsNoBringToFrontOnFocus).
 		Size(size[0], size[1])
 }
 
@@ -81,6 +82,11 @@ func (w *WindowWidget) IsOpen(open *bool) *WindowWidget {
 func (w *WindowWidget) Flags(flags WindowFlags) *WindowWidget {
 	w.flags = flags
 	return w
+}
+
+// GetFlags gets window flags.
+func (w *WindowWidget) GetFlags() WindowFlags {
+	return w.flags
 }
 
 // Size sets window size
