@@ -25,4 +25,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/AllenDang/cimgui-go => github.com/gucio321/cimgui-go v0.0.0-20231220093409-d668d35f0a29
+replace github.com/AllenDang/cimgui-go => github.com/gucio321/cimgui-go v0.0.0-20231221132306-260c729212ba
