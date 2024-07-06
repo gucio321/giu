@@ -122,8 +122,8 @@ func NewMasterWindow(title string, width, height int, flags MasterWindowFlags) *
 func (w *MasterWindow) setTheme() (fin func()) {
 	// Scale DPI in windows
 	if runtime.GOOS == "windows" {
-		xScale, _ := Context.backend.ContentScale()
-		imgui.CurrentStyle().ScaleAllSizes(xScale)
+		// xScale, _ := Context.backend.ContentScale()
+		// imgui.CurrentStyle().ScaleAllSizes(xScale)
 	}
 
 	imgui.PushStyleVarFloat(imgui.StyleVarWindowRounding, 2)
