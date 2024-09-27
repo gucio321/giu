@@ -96,6 +96,7 @@ func (c *context) IO() *imgui.IO {
 }
 
 func (c *context) invalidAllState() {
+	fmt.Println("invalid all state")
 	c.state.Range(func(k, v any) bool {
 		if s, ok := v.(*state); ok {
 			c.m.Lock()
@@ -108,6 +109,7 @@ func (c *context) invalidAllState() {
 }
 
 func (c *context) cleanState() {
+	fmt.Println("clean state")
 	c.state.Range(func(k, v any) bool {
 		if s, ok := v.(*state); ok {
 			c.m.Lock()
@@ -115,6 +117,7 @@ func (c *context) cleanState() {
 			c.m.Unlock()
 
 			if !valid {
+				fmt.Println("invalid ", s.data)
 				c.state.Delete(k)
 				s.data.Dispose()
 			}
